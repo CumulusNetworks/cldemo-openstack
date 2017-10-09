@@ -5,14 +5,14 @@
   become_method: sudo
   roles:
     - ifupdown2
-    - quagga
+    - frr
 - hosts: spines
   user: cumulus
   become: yes
   become_method: sudo
   roles:
     - ifupdown2
-    - quagga
+    - frr
 - hosts: servers
   user: cumulus
   become: yes
