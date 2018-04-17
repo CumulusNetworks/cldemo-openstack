@@ -1,5 +1,5 @@
 - name: write sysctl files so frr works correctly on hosts
-  copy: src=99frr_defaults dest=/etc/sysctl.d/99frr_defaults.conf
+  copy: src=99frr_defaults.conf dest=/etc/sysctl.d/99frr_defaults.conf
   notify: reload sysctl files
 
 - name: Add an Apt signing key, uses whichever key is at the URL
