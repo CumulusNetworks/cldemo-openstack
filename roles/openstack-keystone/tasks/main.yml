@@ -1,19 +1,4 @@
 
-# Install required packages
-- name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
-
-- name: install keyring
-  apt: pkg={{item}} state=present
-  with_items:
-    - ubuntu-cloud-keyring
-
-- name: install packages
-  apt: pkg={{item}} state=present update_cache=yes
-  with_items:
-    - keystone
-    - python-openstackclient
-
 # Install and configure Keystone
 
 - name: create a table for keystone
@@ -34,6 +19,15 @@
 
 - name: configure fernet
   command: keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+  command: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+
+- name: bootstrap identity service
+  command: >
+    keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \
+    --bootstrap-admin-url http://controller:35357/v3/ \
+    --bootstrap-internal-url http://controller:5000/v3/ \
+    --bootstrap-public-url http://controller:5000/v3/ \
+    --bootstrap-region-id RegionOne
 
 - name: flush handlers in case of changed config
   meta: flush_handlers

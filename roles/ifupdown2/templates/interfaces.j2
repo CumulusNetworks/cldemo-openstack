@@ -17,8 +17,10 @@ iface {{ iface }}
 {% endfor %}
 {% endif %}
 
+{% if intvars.fabric is defined %}
 {% for iface in intvars.fabric %}
 auto {{ iface }}
 iface {{ iface }}
 
 {% endfor %}
+{% endif %}

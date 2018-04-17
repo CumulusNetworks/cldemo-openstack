@@ -1,6 +1,13 @@
 
 # This task configures /etc/network/interfaces on ifupdown2. The variables for
 # which interfaces are neighbors and networks come from the group_vars/all file.
+
+- name: install ifupdown2
+  apt: pkg={{item}}ifupdown2 state=present update_cache=yes
+
 - name: configure /etc/network/interfaces
   template: src=interfaces.j2 dest=/etc/network/interfaces
   notify: reload networking
+
+- name: configure /etc/hosts
+  template: src=hosts.j2 dest=/etc/hosts
