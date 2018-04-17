@@ -19,9 +19,9 @@
   become_method: sudo
   roles:
     - ifupdown2
+    - frr-roh
     - server-common
     - openstack-common
-    - quagga-roh
 - hosts: server01
   user: cumulus
   become: yes

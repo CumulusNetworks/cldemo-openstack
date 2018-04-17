@@ -1,0 +1,5 @@
+- name: reload sysctl files
+  command: 'sysctl --system'
+
+- name: restart frr
+  service: name=frr state=restarted

@@ -1,0 +1,27 @@
+- name: write sysctl files so quagga works correctly on hosts
+  copy: src=99cumulus_defaults dest=/etc/sysctl.d/99cumulus_defaults.conf
+  notify: reload sysctl files
+
+- name: Add an Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: https://apps3.cumulusnetworks.com/setup/cumulus-apps-deb.pubkey
+    state: present
+
+- name: Add Cumulus app repository
+  apt_repository:
+      repo: deb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb {{ ansible_lsb['codename'] }} roh-3
+      filename: 'cumulus-apps'
+
+- name: Install FRR
+  apt: pkg=frr state=present
+
+- name: copy FRR daemons
+  copy: src=daemons dest=/etc/frr/
+  notify: restart frr
+
+- name: copy frr conf
+  template: src=frr.conf.j2 dest=/etc/frr/frr.conf
+  notify: restart frr
+
+- name: start frr
+  service: name=frr state=started
