@@ -13,7 +13,7 @@
       filename: 'cumulus-apps'
 
 - name: Install FRR
-  apt: pkg=frr state=present
+  apt: pkg=frr state=present update_cache=yes
 
 - name: copy FRR daemons
   copy: src=daemons dest=/etc/frr/
