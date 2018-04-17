@@ -10,7 +10,7 @@
   when: packages.stderr != ""
 
 - name: Check if a reboot is required
-  register: file
+  register: reboot_required_file
   stat: path=/var/run/reboot-required get_md5=no
 
 - name: restart machine
