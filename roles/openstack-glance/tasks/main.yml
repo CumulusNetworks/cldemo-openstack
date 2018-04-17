@@ -1,7 +1,7 @@
 
 # Install required packages
-- name: get the mitaka packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main' state=present
+- name: get the pike packages
+  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
 
 - name: install keyring
   apt: pkg={{item}} state=present
