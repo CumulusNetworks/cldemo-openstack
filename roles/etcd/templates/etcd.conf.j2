@@ -1,3 +1,5 @@
+{%- for key,value in etcd_settings -%}
+{{hostvars[host]['ansible_hostname']}}=https://{{hostvars[host]['ansible_' + etcd_interface].ipv4.address}}:{{etcd_peer_port}}{% if not loop.last %},{% endif %}
 name: controller
 data-dir: /var/lib/etcd
 initial-cluster-state: 'new'
@@ -7,3 +9,4 @@ initial-advertise-peer-urls: http://10.0.0.11:2380
 advertise-client-urls: http://10.0.0.11:2379
 listen-peer-urls: http://0.0.0.0:2380
 listen-client-urls: http://10.0.0.11:2379
+{%- endfor -%}

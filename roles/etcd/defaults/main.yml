@@ -25,7 +25,7 @@ etcd_settings:
   "data-dir": "{{etcd_data_dir}}" # etcd data directory (etcd database files so to say)
   "initial-cluster-state": "new" # Initial cluster state ('new' or 'existing')
   "initial-cluster-token": "etcd-cluster-01" # Initial cluster token for the etcd cluster during bootstrap.
-  "initial-cluster": "{{etcd_settings.name}}={{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "initial-cluster": "{{'controller=http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address}} + ':' + etcd_peer_port}}"
   "initial-advertise-peer-urls": "{{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
   "advertise-client-urls": "{{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port}}"
   "listen-peer-urls": "{{'http://0.0.0.0:' + etcd_peer_port}}"
