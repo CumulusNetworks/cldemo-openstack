@@ -1,0 +1,35 @@
+# Upgrade Debian/Ubuntu based systems and reboot if necessary.
+---
+
+- name: Check if there are packages available to be installed/upgraded
+  command: /usr/lib/update-notifier/apt-check --package-names
+  register: packages
+
+- name: Upgrade all packages
+  apt: update_cache=yes upgrade=yes
+  when: packages.stderr != ""
+  register: install_done
+
+- name: Autoremove unused packages
+  apt: autoremove=yes
+  when: install_done.stderr != ""
+
+- name: Check if a reboot is required
+  register: reboot_required_file
+  stat: path=/var/run/reboot-required get_md5=no
+
+- name: Restart machine
+  become: yes
+  shell: /sbin/shutdown -r now "Ansible system upgrade complete...rebooting!" && sleep 2
+  #shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: reboot_required_file.stat.exists == true
+
+- name: Waiting for server to come back
+  wait_for: >
+    host={{ inventory_hostname }}
+    delay=10
+    timeout=60
+  delegate_to: localhost

@@ -1,5 +1,9 @@
 
 # Install and configure Keystone
+- name: install packages
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - keystone
 
 - name: create a table for keystone
   mysql_db: name=keystone state=present
@@ -19,6 +23,8 @@
 
 - name: configure fernet
   command: keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+
+- name: configure credentials
   command: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
 
 - name: bootstrap identity service

@@ -1,30 +1,19 @@
-# Upgrade Debian/Ubuntu based systems and reboot if necessary.
 ---
+# This task configures /etc/network/interfaces on ifupdown2. The variables for
+# which interfaces are neighbors and networks come from the group_vars/all file.
+#- name: install ifupdown2
+#  apt: pkg={{item}}ifupdown2 state=present update_cache=yes
 
-- name: Check if there are packages available to be installed/upgraded
-  command: /usr/lib/update-notifier/apt-check --package-names
-  register: packages
+# Legacy ifupdown requires its own template, so we broke it out into a seperate
+# role. In theory, ifupdown2 is capable of running on hosts, but it takes some
+# work to install without having it conflict with other packages. For this demo,
+# legacy ifupdown does what we need.
 
-- name: Upgrade all packages to the latest version
-  apt: update_cache=yes upgrade=dist
-  when: packages.stderr != ""
+# This configures the interfaces and sets the default internal route to point
+# to the leafs. If the configuration changes, ifupdown will be reloaded.
+- name: configure /etc/network/interfaces on the host (using legacy ifupdown)
+  template: src=interfaces.j2 dest=/etc/network/interfaces
+  notify: reload networking legacy
 
-- name: Check if a reboot is required
-  register: reboot_required_file
-  stat: path=/var/run/reboot-required get_md5=no
-
-- name: restart machine
-  become: yes
-  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
-  async: 1
-  poll: 0
-  ignore_errors: true
-  when: reboot_required_file.stat.exists == true
-
-- name: Waiting for server to come back
-  become: no
-  local_action: wait_for
-    port=22
-    host={{ inventory_hostname }}
-    search_regex=OpenSSH
-    delay=10
+- name: configure /etc/hosts on the host
+  template: src=hosts.j2 dest=/etc/hosts
