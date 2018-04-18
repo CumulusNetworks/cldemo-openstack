@@ -115,7 +115,8 @@
     path: /etc/apache2/sites-available/keystone.conf
     insertbefore: BOF
     line: 'ServerName controller'
-
+  tags:
+    - keystone
 
 # Add a bunch of users
 
