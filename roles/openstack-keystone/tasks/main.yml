@@ -4,6 +4,8 @@
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
     - keystone
+    - apache2
+    - libapache2-mod-wsgi
 
 - name: create a table for keystone
   mysql_db: name=keystone state=present

@@ -24,11 +24,11 @@ etcd_settings:
   "name": "controller"
   "data-dir": "{{etcd_data_dir}}" # etcd data directory (etcd database files so to say)
   "initial-cluster-state": "new" # Initial cluster state ('new' or 'existing')
-  "initial-cluster-token": "etcd-cluster-0" # Initial cluster token for the etcd cluster during bootstrap.
-  "initial-cluster": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
-  "initial-advertise-peer-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
-  "advertise-client-urls": "{{etcd_settings.name}}={{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port}}"
-  "listen-peer-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "initial-cluster-token": "etcd-cluster-01" # Initial cluster token for the etcd cluster during bootstrap.
+  "initial-cluster": "{{etcd_settings.name}}={{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "initial-advertise-peer-urls": "{{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "advertise-client-urls": "{{'http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port}}"
+  "listen-peer-urls": "{{'http://0.0.0.0:' + etcd_peer_port}}"
   "listen-client-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port + ',http://127.0.0.1:' + etcd_client_port}}"
 # The following not used in openstack configuration
 #  "cert-file": "{{etcd_conf_dir}}/cert-etcd.pem"
