@@ -15,7 +15,6 @@ etcd_conf_dir: "/etc/etcd"
 # Directory to store downloaded etcd archive
 # Should not be deleted to avoid downloading over and over again
 etcd_download_dir: "/tmp/etcd"
-etcd_archive_dir: "/tmp/etcd"
 # Directroy to store etcd binaries
 etcd_bin_dir: "/usr/local/bin"
 # etcd data directory (etcd database files so to say)

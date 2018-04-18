@@ -23,7 +23,7 @@
     - "{{etcd_conf_dir}}"
     - "{{etcd_bin_dir}}"
     - "{{etcd_data_dir}}"
-    - "{{etc_download_dir}}"
+    - "{{etcd_download_dir}}"
   tags:
     - etcd
 
