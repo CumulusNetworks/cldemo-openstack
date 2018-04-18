@@ -1,0 +1,89 @@
+---
+
+- name: Ensure the group "etcd" exists
+  group:
+    name: etcd
+    state: present
+
+- name: Ensure the system user 'etcd' exists
+  user:
+    name: etcd
+    group: etcd
+    shell: "/bin/false"
+    home: "{{ etcd_data_dir }}"
+    system: yes
+
+- name: Create etcd directories
+  file:
+    path: "{{ item }}"
+    owner: etcd
+    group: etcd
+    state: directory
+  with_items:
+    - "{{etcd_conf_dir}}"
+    - "{{etcd_bin_dir}}"
+    - "{{etcd_data_dir}}"
+    - "{{etc_download_dir}}"
+  tags:
+    - etcd
+
+- name: Downloading official etcd release
+  get_url:
+    url: https://github.com/coreos/etcd/releases/download/v{{etcd_version}}/etcd-v{{etcd_version}}-linux-amd64.tar.gz
+    dest: "{{etcd_download_dir}}"
+    mode: 0755
+  tags:
+    - etcd
+
+- name: Unzip downloaded file
+  unarchive:
+    src: "{{etcd_download_dir}}/etcd-v{{etcd_version}}-linux-amd64.tar.gz"
+    dest: "{{etcd_download_dir}}/"
+    remote_src: yes
+    creates: "{{etcd_download_dir}}/etcd-v{{etcd_version}}-linux-amd64/etcd"
+  tags:
+    - etcd
+
+- name: Copy etcd binaries to destination directory
+  copy:
+    src: "{{etcd_download_dir}}/etcd-v{{etcd_version}}-linux-amd64/{{item}}"
+    dest: "{{etcd_bin_dir}}/{{item}}"
+    mode: 0755
+    owner: root
+    group: root
+    remote_src: yes
+  with_items:
+    - etcd
+    - etcdctl
+  tags:
+    - etcd
+
+- name: Combine etcd_settings and etcd_settings_user (if defined)
+  set_fact:
+    etcd_settings: "{{etcd_settings | combine(etcd_settings_user|default({})) }}"
+  tags:
+    - etcd
+    - etcd-systemd
+
+- name: Create systemd unit file
+  template:
+    src: etc/systemd/system/etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd
+  tags:
+    - etcd
+    - etcd-systemd
+
+- meta: flush_handlers
+
+- name: Enable and start etcd
+  service:
+    name: etcd
+    enabled: yes
+    state: started
+  tags:
+    - etcd

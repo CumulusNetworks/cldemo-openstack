@@ -1,0 +1,60 @@
+---
+# A distributed reliable key-value store for distributed key locking,
+# storing configuration, keeping track of service live-ness and other scenarios.
+
+# etcd version
+etcd_version: "3.2.7"
+# Port where etcd listening for clients
+etcd_client_port: "2379"
+# Port where etcd is listening for it's peer's
+etcd_peer_port: "2380"
+# Interface to bind etcd ports to
+etcd_interface: "lo"
+# Directroy for etcd configuration
+etcd_conf_dir: "/etc/etcd"
+# Directory to store downloaded etcd archive
+# Should not be deleted to avoid downloading over and over again
+etcd_download_dir: "/tmp/etcd"
+etcd_archive_dir: "/tmp/etcd"
+# Directroy to store etcd binaries
+etcd_bin_dir: "/usr/local/bin"
+# etcd data directory (etcd database files so to say)
+etcd_data_dir: "/var/lib/etcd"
+
+etcd_settings:
+  "name": "controller"
+  "data-dir": "{{etcd_data_dir}}" # etcd data directory (etcd database files so to say)
+  "initial-cluster-state": "new" # Initial cluster state ('new' or 'existing')
+  "initial-cluster-token": "etcd-cluster-0" # Initial cluster token for the etcd cluster during bootstrap.
+  "initial-cluster": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "initial-advertise-peer-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "advertise-client-urls": "{{etcd_settings.name}}={{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port}}"
+  "listen-peer-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_peer_port}}"
+  "listen-client-urls": "{{'https://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address + ':' + etcd_client_port + ',http://127.0.0.1:' + etcd_client_port}}"
+# The following not used in openstack configuration
+#  "cert-file": "{{etcd_conf_dir}}/cert-etcd.pem"
+#  "key-file": "{{etcd_conf_dir}}/cert-etcd-key.pem"
+#  "peer-cert-file": "{{etcd_conf_dir}}/cert-etcd.pem"
+#  "peer-key-file": "{{etcd_conf_dir}}/cert-etcd-key.pem"
+#  "peer-trusted-ca-file": "{{etcd_conf_dir}}/ca-etcd.pem"
+#  "peer-client-cert-auth": "true" # # Enable peer client cert authentication
+#  "client-cert-auth": "true" # Enable client cert authentication
+#  "trusted-ca-file": "{{etcd_conf_dir}}/ca-etcd.pem"
+#  "wal-dir": "" # Dedicated wal directory ("" means no seperated WAL directory)
+#  "auto-compaction-retention": "0" # Auto compaction retention in hour. 0 means disable auto compaction.
+#  "snapshot-count": "100000" # Number of committed transactions to trigger a snapshot to disk
+#  "heartbeat-interval": "100" # Time (in milliseconds) of a heartbeat interval
+#  "election-timeout": "1000" # Time (in milliseconds) for an election to timeout. See tuning documentation for details
+#  "max-snapshots": "5" # Maximum number of snapshot files to retain (0 is unlimited)
+#  "max-wals": "5" # Maximum number of wal files to retain (0 is unlimited)
+#  "cors": "" # Comma-separated whitelist of origins for CORS (cross-origin resource sharing)
+#  "quota-backend-bytes": "0" # Raise alarms when backend size exceeds the given quota (0 defaults to low space quota)
+#  "log-package-levels": "" # Specify a particular log level for each etcd package (eg: 'etcdmain=CRITICAL,etcdserver=DEBUG')
+#  "log-output": "default" # Specify 'stdout' or 'stderr' to skip journald logging even when running under systemd
+
+# Certificate authority and certificate files for etcd
+etcd_certificates:
+  - ca-etcd.pem        # client server TLS trusted CA key file/peer server TLS trusted CA file
+  - ca-etcd-key.pem    # CA key file
+  - cert-etcd.pem      # peer server TLS cert file
+  - cert-etcd-key.pem  # peer server TLS key file
