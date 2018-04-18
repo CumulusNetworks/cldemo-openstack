@@ -66,8 +66,8 @@
     - etcd-systemd
 
 - name: Create systemd unit file
-  template:
-    src: etcd.service.j2
+  copy:
+    src: etcd.service
     dest: /etc/systemd/system/etcd.service
     owner: root
     group: root
