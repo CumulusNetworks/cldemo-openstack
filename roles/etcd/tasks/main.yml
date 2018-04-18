@@ -4,6 +4,8 @@
   group:
     name: etcd
     state: present
+  tags:
+    - etcd
 
 - name: Ensure the system user 'etcd' exists
   user:
@@ -12,6 +14,8 @@
     shell: "/bin/false"
     home: "{{ etcd_data_dir }}"
     system: yes
+  tags:
+    - etcd
 
 - name: Create etcd directories
   file:
@@ -21,7 +25,6 @@
     state: directory
   with_items:
     - "{{etcd_conf_dir}}"
-    - "{{etcd_bin_dir}}"
     - "{{etcd_data_dir}}"
     - "{{etcd_download_dir}}"
   tags:

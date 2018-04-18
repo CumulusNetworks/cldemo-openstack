@@ -6,28 +6,44 @@
     - keystone
     - apache2
     - libapache2-mod-wsgi
+  tags:
+    - keystone
 
 - name: create a table for keystone
   mysql_db: name=keystone state=present
+  tags:
+    - keystone
 
 - name: enable db access 1
   command: mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  tags:
+    - keystone
 
 - name: enable db access 2
   command: mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  tags:
+    - keystone
 
 - name: /etc/keystone/keystone.conf
   template: src=keystone.conf.j2 dest=/etc/keystone/keystone.conf
   notify: restart keystone
+  tags:
+    - keystone
 
 - name: keystone dbsync
   shell: su -s /bin/sh -c "keystone-manage db_sync" keystone
+  tags:
+    - keystone
 
 - name: configure fernet
   command: keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+  tags:
+    - keystone
 
 - name: configure credentials
   command: keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+  tags:
+    - keystone
 
 - name: bootstrap identity service
   command: >
@@ -36,38 +52,55 @@
     --bootstrap-internal-url http://controller:5000/v3/ \
     --bootstrap-public-url http://controller:5000/v3/ \
     --bootstrap-region-id RegionOne
+  tags:
+    - keystone
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - keystone
 
 - name: start keystone
   service: name=keystone state=started
+  tags:
+    - keystone
 
 - name: wait for keystone to wake up
   pause: seconds=10
-
+  tags:
+    - keystone
 
 
 # Collect keystone data to avoid duplication errors
 - name: collect services
   command: openstack {{ openstack.args }} service list
   register: _services
+  tags:
+    - keystone
 
 - name: collect users
   command: openstack {{ openstack.args }} user list
   register: _users
+  tags:
+    - keystone
 
 - name: collect roles
   command: openstack {{ openstack.args }} role list
   register: _roles
+  tags:
+    - keystone
 
 - name: collect projects
   command: openstack {{ openstack.args }} project list
   register: _projects
+  tags:
+    - keystone
 
 - name: collect domains
   command: openstack {{ openstack.args }} domain list
   register: _domains
+  tags:
+    - keystone
 
 
 
@@ -75,6 +108,8 @@
 - name: add keystone service
   command: openstack {{openstack.args}} service create --name keystone --description "Openstack Identity" identity
   when: "'keystone' not in _services.stdout"
+  tags:
+    - keystone
 
 - name: add keystone endpoints
   command: openstack {{openstack.args}} endpoint create --region RegionOne identity {{item.a}} http://controller:{{ item.b }}/v3
@@ -83,6 +118,8 @@
       - {a: "internal", b: 5000}
       - {a: "admin", b: 35357}
   when: "'keystone' not in _services.stdout"
+  tags:
+    - keystone
 
 
 
@@ -92,39 +129,60 @@
 - name: add default domain
   command: openstack {{openstack.args}} domain create --description "Default Domain" default
   when: "'default' not in _domains.stdout"
+  tags:
+    - keystone
 
 - name: add admin project
   command: openstack {{openstack.args}} project create --domain default --description "Admin project" admin
   when: "'admin' not in _projects.stdout"
+  tags:
+    - keystone
 
 - name: add admin user
   command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} admin
   when: "'admin' not in _users.stdout"
+  tags:
+    - keystone
 
 - name: add admin role
   command: openstack {{openstack.args}} role create admin
   when: "'admin' not in _roles.stdout"
+  tags:
+    - keystone
 
 - name: add admin role to admin project and user
   command: openstack {{openstack.args}} role add --project admin --user admin admin
   when: "'admin' not in _users.stdout"
+  tags:
+    - keystone
 
 - name: add service project
   command: openstack {{openstack.args}} project create --domain default --description "Service Project" service
   when: "'service' not in _projects.stdout"
+  tags:
+    - keystone
 
 - name: add demo project
   command: openstack {{openstack.args}} project create --domain default --description "Demo Project" demo
   when: "'demo' not in _projects.stdout"
+  tags:
+    - keystone
 
 - name: add demo user
   command: openstack {{openstack.args}} user create --domain default --password {{openstack.demo_password}} demo
   when: "'demo' not in _users.stdout"
+  tags:
+    - keystone
 
 - name: add user role
   command: openstack {{openstack.args}} role create user
   when: "'user' not in _roles.stdout"
+  tags:
+    - keystone
 
 - name: add user role to demo project and user
   command: openstack {{openstack.args}} role add --project demo --user demo user
   when: "'demo' not in _users.stdout"
+  tags:
+    - keystone
+    
