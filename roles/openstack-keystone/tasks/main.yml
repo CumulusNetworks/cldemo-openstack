@@ -45,31 +45,10 @@
   tags:
     - keystone
 
-- name: bootstrap identity service
-  command: >
-    keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \
-    --bootstrap-admin-url http://controller:35357/v3/ \
-    --bootstrap-internal-url http://controller:5000/v3/ \
-    --bootstrap-public-url http://controller:5000/v3/ \
-    --bootstrap-region-id RegionOne
-  tags:
-    - keystone
-
 - name: flush handlers in case of changed config
   meta: flush_handlers
   tags:
     - keystone
-
-- name: start keystone
-  service: name=keystone state=started
-  tags:
-    - keystone
-
-- name: wait for keystone to wake up
-  pause: seconds=10
-  tags:
-    - keystone
-
 
 # Collect keystone data to avoid duplication errors
 - name: collect services
@@ -103,7 +82,6 @@
     - keystone
 
 
-
 # Add keystone services and endpoints
 - name: add keystone service
   command: openstack {{openstack.args}} service create --name keystone --description "Openstack Identity" identity
@@ -111,17 +89,32 @@
   tags:
     - keystone
 
-- name: add keystone endpoints
-  command: openstack {{openstack.args}} endpoint create --region RegionOne identity {{item.a}} http://controller:{{ item.b }}/v3
-  with_items:
-      - {a: "public", b: 5000}
-      - {a: "internal", b: 5000}
-      - {a: "admin", b: 35357}
-  when: "'keystone' not in _services.stdout"
+#- name: add keystone endpoints
+#  command: openstack {{openstack.args}} endpoint create --region RegionOne identity {{item.a}} http://controller:{{ item.b }}/v3
+#  with_items:
+#      - {a: "public", b: 5000}
+#      - {a: "internal", b: 5000}
+#      - {a: "admin", b: 35357}
+#  when: "'keystone' not in _services.stdout"
+#  tags:
+#    - keystone
+
+- name: bootstrap identity service
+  command: >
+    keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \
+    --bootstrap-admin-url http://controller:35357/v3/ \
+    --bootstrap-internal-url http://controller:5000/v3/ \
+    --bootstrap-public-url http://controller:5000/v3/ \
+    --bootstrap-region-id RegionOne
   tags:
     - keystone
 
 
+- name: Add ServerName to apache
+  lineinfile:
+    path: /etc/apache2/sites-available/keystone.conf
+    insertbefore: BOF
+    line: 'ServerName controller'
 
 
 # Add a bunch of users
@@ -185,4 +178,3 @@
   when: "'demo' not in _users.stdout"
   tags:
     - keystone
-    
