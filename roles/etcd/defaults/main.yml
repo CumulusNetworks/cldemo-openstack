@@ -22,7 +22,7 @@ etcd_data_dir: "/var/lib/etcd"
 
 etcd_settings:
   name: "controller"
-  data_dir: {{etcd_data_dir}}
+  data_dir: "{{etcd_data_dir}}"
   initial_cluster_state: "new"
   initial_cluster_token: "etcd-cluster-01"
   initial_cluster: "{{'controller=http://' + hostvars[inventory_hostname]['ansible_' + etcd_interface].ipv4.address}} + ':' + etcd_peer_port}}"
