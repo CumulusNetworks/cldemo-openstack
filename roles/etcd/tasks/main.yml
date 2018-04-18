@@ -65,6 +65,13 @@
     - etcd
     - etcd-systemd
 
+- name: Create etcd configuration
+  template:
+    src: etcd.conf.j2
+    dest: /etc/etcd/etcd.conf.yml
+  tags:
+    - etcd
+
 - name: Create systemd unit file
   copy:
     src: etcd.service
