@@ -10,7 +10,7 @@
 
 - name: install packages
   apt:
-    pkg: {{item}}
+    pkg: "{{item}}"
     state: present
     update_cache: yes
     allow_unauthenticated: yes
