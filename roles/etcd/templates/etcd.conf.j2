@@ -1,7 +1,7 @@
 
 name: {{ etcd_settings.name }}
-data-dir: {{ etcd_settings.data_dir }}
-initial-cluster-state: {{ etcd_settings.initial_cluster_state }}
+data-dir: "{{ etcd_settings.data_dir }}"
+initial-cluster-state: "{{ etcd_settings.initial_cluster_state }}"
 initial-cluster-token: {{ etcd_settings.initial_cluster_token }}
 initial-cluster: controller=http://{{openstack.controller}}:{{etcd_peer_port}}
 initial-advertise-peer-urls: http://{{openstack.controller}}:{{etcd_peer_port}}
