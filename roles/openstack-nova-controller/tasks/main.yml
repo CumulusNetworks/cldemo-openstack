@@ -1,7 +1,11 @@
 
 # Install required packages
 - name: install packages
-  apt: pkg={{item}} state=present update_cache=yes
+  apt:
+    pkg: {{item}}
+    state: present
+    update_cache: yes
+    allow_unauthenticated: yes
   with_items:
     - nova-api
     - nova-conductor

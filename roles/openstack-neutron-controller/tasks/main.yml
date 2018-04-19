@@ -2,7 +2,11 @@
 # Install required packages
 # Networking Option 2: Self-service networks
 - name: install packages
-  apt: pkg={{item}} state=present update_cache=yes
+  apt:
+    pkg: {{item}}
+    state: present
+    update_cache: yes
+    allow_unauthenticated: yes
   with_items:
     - neutron-server
     - neutron-plugin-ml2
