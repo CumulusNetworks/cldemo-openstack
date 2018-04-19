@@ -2,7 +2,7 @@
 # This task configures /etc/network/interfaces on ifupdown2. The variables for
 # which interfaces are neighbors and networks come from the group_vars/all file.
 - name: install ifupdown2
-  apt: pkg={{item}}ifupdown2 state=present update_cache=yes
+  apt: pkg=ifupdown2 state=present update_cache=yes
 
 # Legacy ifupdown requires its own template, so we broke it out into a seperate
 # role. In theory, ifupdown2 is capable of running on hosts, but it takes some
