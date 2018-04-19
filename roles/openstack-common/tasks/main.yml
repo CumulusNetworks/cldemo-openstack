@@ -8,6 +8,9 @@
     - ubuntu-cloud-keyring
     - software-properties-common
 
+- name: Update APT
+  apt: update_cache=yes
+
 - name: install packages
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
