@@ -48,7 +48,7 @@
 - name: Add ServerName to apache
   lineinfile:
     path: /etc/apache2/sites-available/keystone.conf
-    insertbefore: BOF
+    insertbefore: '^Listen 5000'
     line: 'ServerName controller'
   notify: restart apache2
   tags:
