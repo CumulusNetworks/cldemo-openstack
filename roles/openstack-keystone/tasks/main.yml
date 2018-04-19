@@ -50,7 +50,7 @@
     path: /etc/apache2/sites-available/keystone.conf
     insertbefore: BOF
     line: 'ServerName controller'
-  notify: restart apache
+  notify: restart apache2
   tags:
     - keystone
 
