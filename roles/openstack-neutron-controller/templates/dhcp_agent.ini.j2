@@ -20,7 +20,8 @@
 #network_device_mtu = <None>
 
 # The driver used to manage the virtual interface. (string value)
-interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+#interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+interface_driver = linuxbridge
 
 # Timeout in seconds for ovs-vsctl commands. If the timeout expires, ovs
 # commands will fail with ALARMCLOCK error. (integer value)

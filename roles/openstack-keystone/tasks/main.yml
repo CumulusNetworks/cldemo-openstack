@@ -45,10 +45,30 @@
   tags:
     - keystone
 
+- name: Add ServerName to apache
+  lineinfile:
+    path: /etc/apache2/sites-available/keystone.conf
+    insertbefore: BOF
+    line: 'ServerName controller'
+  notify: restart apache
+  tags:
+    - keystone
+
 - name: flush handlers in case of changed config
   meta: flush_handlers
   tags:
     - keystone
+
+- name: bootstrap identity service
+  command: >
+    keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \
+    --bootstrap-admin-url http://controller:35357/v3/ \
+    --bootstrap-internal-url http://controller:5000/v3/ \
+    --bootstrap-public-url http://controller:5000/v3/ \
+    --bootstrap-region-id RegionOne
+  tags:
+    - keystone
+
 
 # Collect keystone data to avoid duplication errors
 - name: collect services
@@ -89,37 +109,17 @@
   tags:
     - keystone
 
-#- name: add keystone endpoints
-#  command: openstack {{openstack.args}} endpoint create --region RegionOne identity {{item.a}} http://controller:{{ item.b }}/v3
-#  with_items:
-#      - {a: "public", b: 5000}
-#      - {a: "internal", b: 5000}
-#      - {a: "admin", b: 35357}
-#  when: "'keystone' not in _services.stdout"
-#  tags:
-#    - keystone
-
-- name: bootstrap identity service
-  command: >
-    keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \
-    --bootstrap-admin-url http://controller:35357/v3/ \
-    --bootstrap-internal-url http://controller:5000/v3/ \
-    --bootstrap-public-url http://controller:5000/v3/ \
-    --bootstrap-region-id RegionOne
+- name: add keystone endpoints
+  command: openstack {{openstack.args}} endpoint create --region RegionOne identity {{item.a}} http://controller:{{ item.b }}/v3
+  with_items:
+      - {a: "public", b: 5000}
+      - {a: "internal", b: 5000}
+      - {a: "admin", b: 35357}
+  when: "'keystone' not in _services.stdout"
   tags:
     - keystone
 
-
-- name: Add ServerName to apache
-  lineinfile:
-    path: /etc/apache2/sites-available/keystone.conf
-    insertbefore: BOF
-    line: 'ServerName controller'
-  tags:
-    - keystone
-
-# Add a bunch of users
-
+# Create a domain, projects, users, and roles
 - name: add default domain
   command: openstack {{openstack.args}} domain create --description "Default Domain" default
   when: "'default' not in _domains.stdout"

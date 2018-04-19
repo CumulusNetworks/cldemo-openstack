@@ -1,13 +1,6 @@
 
 # Install required packages
-- name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
-
-- name: install keyring
-  apt: pkg={{item}} state=present
-  with_items:
-    - ubuntu-cloud-keyring
-
+# Networking Option 2: Self-service networks
 - name: install packages
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
@@ -16,10 +9,9 @@
     - neutron-linuxbridge-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - python-openstackclient
     - neutron-l3-agent
 
-# Install and configure Nova
+# Populate database for Neutron
 - name: create a table for neutron
   mysql_db: name=neutron state=present
 
@@ -29,6 +21,7 @@
 - name: enable db access 2
   command: mysql  -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
 
+# Configure Neutron
 - name: neutron config files
   template: src={{item}}.j2 dest=/etc/neutron/{{item}}
   with_items:
@@ -45,7 +38,7 @@
       - linuxbridge_agent.ini
   notify: restart neutron
 
-# Create glance user, service, and endpoint
+# Create Neutron user, service, and endpoint
 - name: collect services
   command: openstack {{ openstack.args }} service list
   register: _services
@@ -91,7 +84,7 @@
 
 
 
-- name: neutron api dbsync
+- name: populate the neutron database
   shell: su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
 
 

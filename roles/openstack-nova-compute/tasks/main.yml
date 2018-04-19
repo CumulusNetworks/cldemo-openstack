@@ -1,18 +1,23 @@
 
 # Install required packages
-- name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
-
-- name: install keyring
-  apt: pkg={{item}} state=present
-  with_items:
-    - ubuntu-cloud-keyring
-
 - name: install packages
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
     - nova-compute
-    - python-openstackclient
+  tags:
+    - nova
+
+- name: verify node supports hardware acceleration
+  command: egrep -c '(vmx|svm)' /proc/cpuinfo
+  register: hw_acceleration
+  tags:
+    - nova
+
+- set_fact:
+    hw_accelerated: true
+  when: "{{ hw_acceleration.stdout }} >= 1"
+  tags:
+    - nova
 
 - name: nova config files
   template: src={{item}}.j2 dest=/etc/nova/{{item}}
@@ -20,14 +25,25 @@
       - nova.conf
       - nova-compute.conf
   notify: restart nova compute
+  tags:
+    - nova
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - nova
 
 - name: start nova compute
   service: name={{ item }} state=started enabled=true
   with_items:
       - nova-compute
+  tags:
+    - nova
 
 - name: wait for nova to wake up
   pause: seconds=10
+  tags:
+    - nova
+
+- name: Add compute node to cell database
+  shell: su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova

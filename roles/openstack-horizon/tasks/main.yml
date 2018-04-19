@@ -1,17 +1,11 @@
 
 # Install required packages
-- name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
-
-- name: install keyring
-  apt: pkg={{item}} state=present
-  with_items:
-    - ubuntu-cloud-keyring
-
 - name: install packages
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
     - openstack-dashboard
+  tags:
+    - horizon
 
 
 - name: horizon config files
@@ -19,11 +13,20 @@
   with_items:
       - local_settings.py
   notify: restart apache2
+  tags:
+    - horizon
+
+- name: Add WSGI line to horizon apache config
+  lineinfile:
+    path: /etc/apache2/conf-available/openstack-dashboard.conf
+    insertafter: "^WSGIProcessGroup*"
+    line: 'WSGIApplicationGroup %{GLOBAL}'
+  notify: restart apache2
+  tags:
+    - horizon
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - horizon
 
-- name: start apache
-  service: name={{ item }} state=started enabled=true
-  with_items:
-      - apache2

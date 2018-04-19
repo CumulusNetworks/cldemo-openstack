@@ -1,13 +1,5 @@
 
 # Install required packages
-- name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
-
-- name: install keyring
-  apt: pkg={{item}} state=present
-  with_items:
-    - ubuntu-cloud-keyring
-
 - name: install packages
   apt: pkg={{item}} state=present update_cache=yes
   with_items:
@@ -16,14 +8,17 @@
     - nova-consoleauth
     - nova-novncproxy
     - nova-scheduler
-    - python-openstackclient
+    - nova-placement-api
 
 # Install and configure Nova
+- name: create a table for nova api
+  mysql_db: name=nova_api state=present
+
 - name: create a table for nova
   mysql_db: name=nova state=present
 
-- name: create a table for nova api
-  mysql_db: name=nova_api state=present
+- name: create a table for nova cell0
+  mysql_db: name=nova_cell0 state=present
 
 - name: enable db access 1
   command: mysql -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
@@ -37,25 +32,33 @@
 - name: enable db access 4
   command: mysql  -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
 
+- name: enable db access 3
+  command: mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+
+- name: enable db access 4
+  command: mysql  -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+
 - name: nova config files
   template: src={{item}}.j2 dest=/etc/nova/{{item}}
   with_items:
       - nova.conf
   notify: restart nova
 
-- name: nova api dbsync
+- name: populate the nova-api database
   shell: su -s /bin/sh -c "nova-manage api_db sync" nova
 
-- name: nova dbsync
+- name: Register the cell0 database
+  shell: su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+
+- name: Create the cell1 cell:
+  shell: su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+
+- name: Populate the nova database
   shell: su -s /bin/sh -c "nova-manage db sync" nova
 
 
-- name: flush handlers in case of changed config
-  meta: flush_handlers
-
-
-- name: start nova
-  service: name={{ item }} state=started enabled=true
+- name: restart nova
+  service: name={{ item }} state=restarted enabled=true
   with_items:
       - nova-api
       - nova-consoleauth
@@ -63,11 +66,14 @@
       - nova-conductor
       - nova-novncproxy
 
-- name: wait for nova to wake up
+- name: flush handlers in case of changed config
+  meta: flush_handlers
+
+- name: wait for nova and placement to wake up
   pause: seconds=10
 
 
-# Create glance user, service, and endpoint
+# Create Nova user, service, and endpoint
 - name: collect services
   command: openstack {{ openstack.args }} service list
   register: _services
@@ -108,5 +114,27 @@
       - {a: "admin", b: 8774}
   when: "'nova' not in _services.stdout"
 
-- name: wait for nova to wake up
+# Create Placement user, service, and endpoint
+- name: add placement user
+  command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} placement
+  when: "'placement' not in _users.stdout"
+
+- name: add admin role to placement user
+  command: openstack {{openstack.args}} role add --project service --user placement admin
+  when: "'placement' not in _users.stdout"
+
+- name: add placement service
+  command: openstack {{openstack.args}} service create --name placement --description "Placement API" placement
+  when: "'placement' not in _services.stdout"
+
+- name: add nova endpoints
+  command: openstack {{openstack.args}} endpoint create --region RegionOne placement {{item.a}} http://controller:{{ item.b }}
+  with_items:
+      - {a: "public", b: 8778}
+      - {a: "internal", b: 8778}
+      - {a: "admin", b: 8778}
+  when: "'placement' not in _services.stdout"
+
+
+- name: wait for nova and placement to wake up
   pause: seconds=10

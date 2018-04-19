@@ -28,7 +28,7 @@ WEBROOT = '/'
 # with the list of host/domain names that the application can serve.
 # For more information see:
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-#ALLOWED_HOSTS = ['horizon.example.com', ]
+ALLOWED_HOSTS = ['*']
 
 # Set SSL proxy settings:
 # Pass this header from the proxy after terminating the SSL,
@@ -70,7 +70,7 @@ OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 # Also, you will most likely have a value in the keystone policy file like this
 #    "cloud_admin": "rule:admin_required and domain_id:<your domain id>"
 # This value must match the domain id specified there.
-OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'default'
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
 
 # Set this to True to enable panels that provide the ability for users to
 # manage Identity Providers (IdPs) and establish a set of rules to map
@@ -260,15 +260,15 @@ OPENSTACK_CINDER_FEATURES = {
 # services provided by neutron. Options currently available are load
 # balancer service, security groups, quotas, VPN service.
 OPENSTACK_NEUTRON_NETWORK = {
-    'enable_router': True,
-    'enable_quotas': True,
-    'enable_ipv6': True,
+    'enable_router': False,
+    'enable_quotas': False,
+    'enable_ipv6': False,
     'enable_distributed_router': False,
     'enable_ha_router': False,
-    'enable_lb': True,
-    'enable_firewall': True,
-    'enable_vpn': True,
-    'enable_fip_topology_check': True,
+    'enable_lb': False,
+    'enable_firewall': False,
+    'enable_vpn': False,
+    'enable_fip_topology_check': False,
 
     # Neutron can be configured with a default Subnet Pool to be used for IPv4
     # subnet-allocation. Specify the label you wish to display in the Address

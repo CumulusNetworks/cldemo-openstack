@@ -14,11 +14,13 @@ auth_strategy = keystone
 my_ip = {{ openstack.ip[ansible_hostname] }}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
-
+transport_url = rabbit://openstack:{{openstack.admin_password}}@controller
 
 [api_database]
 connection = mysql+pymysql://nova:{{openstack.admin_password}}@controller/nova_api
 
+[cells]
+enable = False
 
 [database]
 connection = mysql+pymysql://nova:{{openstack.admin_password}}@controller/nova
@@ -29,7 +31,8 @@ rabbit_host = controller
 rabbit_userid = openstack
 rabbit_password = {{openstack.admin_password}}
 
-
+[api]
+auth_strategy = keystone
 
 [keystone_authtoken]
 auth_uri = http://controller:5000
@@ -68,3 +71,13 @@ password = {{ openstack.admin_password }}
 
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ openstack.admin_password }}
+
+[placement]
+os_region_name = RegionOne
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://controller:35357/v3
+username = placement
+password = {{openstack.admin_password}}
