@@ -30,7 +30,7 @@
     - mysql
     - rabbitmq
     - memcached
-#    - etcd
+    - etcd
     - openstack-keystone
     - openstack-glance
     - openstack-neutron-controller

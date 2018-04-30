@@ -63,6 +63,12 @@
   tags:
     - keystone
 
+# The keystone-manage bootstrap command will create a user, project and role, and will assign the newly created role
+# to the newly created user on the newly created project. By default, the names of these new resources will be called
+# admin. Optionally, if specified by --bootstrap-public-url, --bootstrap-admin-url and/or --bootstrap-internal-url
+# or the equivalent environment variables, the command will create an identity service with the specified
+# endpoint information. You may also configure the --bootstrap-region-id and --bootstrap-service-name for
+# the endpoints to your deployment’s requirements.
 - name: bootstrap identity service
   command: >
     keystone-manage bootstrap --bootstrap-password '{{openstack.admin_password}}' \

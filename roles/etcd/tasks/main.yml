@@ -3,6 +3,7 @@
 - name: Ensure the group "etcd" exists
   group:
     name: etcd
+    system: yes
     state: present
   tags:
     - etcd
