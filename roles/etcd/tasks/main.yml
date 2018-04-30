@@ -11,8 +11,9 @@
   user:
     name: etcd
     group: etcd
-    shell: "/bin/false"
+    shell: /bin/false
     home: "{{ etcd_data_dir }}"
+    create_home: no
     system: yes
   tags:
     - etcd

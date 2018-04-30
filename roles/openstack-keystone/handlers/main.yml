@@ -1,6 +1,7 @@
 
-- name: restart keystone
-  service: name=keystone state=restarted
+# Keystone is not a service that can be restarted anymore.
+#- name: restart keystone
+#  service: name=keystone state=restarted
 
 - name: restart apache2
   service: name={{ item }} state=restarted

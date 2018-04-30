@@ -30,7 +30,7 @@
 
 - name: /etc/keystone/keystone.conf
   template: src=keystone.conf.j2 dest=/etc/keystone/keystone.conf
-  notify: restart keystone
+#  notify: restart keystone
   tags:
     - keystone
 
