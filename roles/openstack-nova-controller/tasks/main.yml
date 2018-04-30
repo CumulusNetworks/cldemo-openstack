@@ -54,8 +54,13 @@
 - name: Register the cell0 database
   shell: su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
 
+- name: List the nova cells
+  shell: su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
+  register: nova_cells
+
 - name: Create the cell1 cell
   shell: su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+  when: "'cell1' not in nova_cells.stdout"
 
 - name: Populate the nova database
   shell: su -s /bin/sh -c "nova-manage db sync" nova
@@ -145,5 +150,4 @@
 
 - name: Add compute node to cell database
   shell: su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
-  ignore_errors: yes
 
