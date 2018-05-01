@@ -6,13 +6,25 @@
     - mysql-server-5.7
     - mysql-client-5.7
     - python-mysqldb
+  tags:
+    - mysql
+    - environment
 
 - name: configure mysql to run on all ports.
   copy: src=mysqld.cnf dest=/etc/mysql/mysql.conf.d/mysqld.cnf
   notify: restart mysql
+  tags:
+    - mysql
+    - environment
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - mysql
+    - environment
 
 - name: make sure mysql is running
   service: name=mysql state=started enabled=true
+  tags:
+    - mysql
+    - environment
