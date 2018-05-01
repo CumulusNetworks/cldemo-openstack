@@ -4,39 +4,59 @@
   with_items:
       - admin-openrc
       - demo-openrc
+  tags:
+    - configure
 
 - name: collect flavors
   command: openstack {{ openstack.admin_credentials }} flavor list
   register: _flavors
+  tags:
+    - configure
 
 - name: add m1.nano flavor
   command: openstack {{openstack.admin_credentials}} flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add icmp security rule
   command: openstack {{openstack.admin_credentials}} security group rule create --proto icmp default
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add ssh security rule
   command: openstack {{openstack.admin_credentials}} security group rule create --proto tcp --dst-port 22 default
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add icmp security rule for demo user
   command: openstack {{openstack.demo_credentials}} security group rule create --proto icmp default
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add ssh security rule for demo user
   command: openstack {{openstack.demo_credentials}} security group rule create --proto tcp --dst-port 22 default
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add provider network for neutron
   command: neutron {{openstack.neutron_credentials}}  net-create --shared --provider:physical_network provider   --provider:network_type flat provider
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: make provider network routable
   command: neutron {{openstack.neutron_credentials}} net-update provider --router:external
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure
 
 - name: add subnet to provider network
   command: neutron {{openstack.neutron_credentials}} subnet-create --name provider --allocation-pool start={{openstack.provider_network.start}},end={{openstack.provider_network.end}} --dns-nameserver 8.8.4.4 --gateway {{openstack.provider_network.gateway}} provider {{openstack.provider_network.cidr}}
   when: "'m1.nano' not in _flavors.stdout"
+  tags:
+    - configure

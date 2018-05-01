@@ -8,26 +8,38 @@
     allow_unauthenticated: yes
   with_items:
     - neutron-linuxbridge-agent
+  tags:
+    - neutron
 
 - name: neutron config files
   template: src={{item}}.j2 dest=/etc/neutron/{{item}}
   with_items:
       - neutron.conf
   notify: restart neutron
+  tags:
+    - neutron
 
 - name: ml2 config files
   template: src={{item}}.j2 dest=/etc/neutron/plugins/ml2/{{item}}
   with_items:
       - linuxbridge_agent.ini
   notify: restart neutron
+  tags:
+    - neutron
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - neutron
 
 - name: start neutron compute
   service: name={{ item }} state=started enabled=true
   with_items:
       - neutron-linuxbridge-agent
+  tags:
+    - neutron
 
 - name: wait for neutron to wake up
   pause: seconds=10
+  tags:
+    - neutron

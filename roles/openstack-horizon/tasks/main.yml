@@ -11,7 +11,6 @@
   tags:
     - horizon
 
-
 - name: horizon config files
   template: src={{item}}.j2 dest=/etc/openstack-dashboard/{{item}}
   with_items:

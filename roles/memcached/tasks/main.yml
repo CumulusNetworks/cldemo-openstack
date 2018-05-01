@@ -5,15 +5,27 @@
   with_items:
     - memcached
     - python-memcache
+  tags:
+    - memcached
+    - environment
 
 - name: memcached config files
   template: src={{item}}.j2 dest=/etc/{{item}}
   with_items:
       - memcached.conf
   notify: restart memcached
+  tags:
+    - memcached
+    - environment
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - memcached
+    - environment
 
 - name: make sure memcached is running
   service: name=memcached state=started
+  tags:
+    - memcached
+    - environment

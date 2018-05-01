@@ -8,16 +8,24 @@
     allow_unauthenticated: yes
   with_items:
     - glance
+  tags:
+    - glance
 
 # Install and configure Glance
 - name: create a table for glance
   mysql_db: name=glance state=present
+  tags:
+    - glance
 
 - name: enable db access 1
   command: mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  tags:
+    - glance
 
 - name: enable db access 2
   command: mysql  -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  tags:
+    - glance
 
 - name: glance config files
   template: src={{item}}.j2 dest=/etc/glance/{{item}}
@@ -25,56 +33,82 @@
       - glance-api.conf
       - glance-registry.conf
   notify: restart glance
+  tags:
+    - glance
 
 - name: glance dbsync
   shell: su -s /bin/sh -c "glance-manage db_sync" glance
+  tags:
+    - glance
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
-
+  tags:
+    - glance
 
 - name: start glance api
   service: name=glance-api state=started
+  tags:
+    - glance
 
 - name: start glance regisry
   service: name=glance-registry state=started
-
+  tags:
+    - glance
 
 - name: wait for glance to wake up
   pause: seconds=10
+  tags:
+    - glance
 
 # Create glance user, service, and endpoint
 - name: collect services
   command: openstack {{ openstack.args }} service list
   register: _services
+  tags:
+    - glance
 
 - name: collect users
   command: openstack {{ openstack.args }} user list
   register: _users
+  tags:
+    - glance
 
 - name: collect roles
   command: openstack {{ openstack.args }} role list
   register: _roles
+  tags:
+    - glance
 
 - name: collect projects
   command: openstack {{ openstack.args }} project list
   register: _projects
+  tags:
+    - glance
 
 - name: collect domains
   command: openstack {{ openstack.args }} domain list
   register: _domains
+  tags:
+    - glance
 
 - name: add glance user
   command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} glance
   when: "'glance' not in _users.stdout"
+  tags:
+    - glance
 
 - name: add admin role to glance user
   command: openstack {{openstack.args}} role add --project service --user glance admin
   when: "'glance' not in _users.stdout"
+  tags:
+    - glance
 
 - name: add glance service
   command: openstack {{openstack.args}} service create --name glance --description "Openstack Image" image
   when: "'glance' not in _services.stdout"
+  tags:
+    - glance
 
 - name: add glance endpoints
   command: openstack {{openstack.args}} endpoint create --region RegionOne image {{item.a}} http://controller:{{ item.b }}
@@ -83,10 +117,13 @@
       - {a: "internal", b: 9292}
       - {a: "admin", b: 9292}
   when: "'glance' not in _services.stdout"
+  tags:
+    - glance
 
 - name: wait for glance to wake up
   pause: seconds=10
-
+  tags:
+    - glance
 
 
 # Now add a basic image.
@@ -94,6 +131,8 @@
 - name: collect images
   command: openstack {{ openstack.admin_credentials }} image list
   register: _images
+  tags:
+    - glance
 
 - name: download cirros.conf
   get_url:
@@ -101,7 +140,11 @@
     dest: /tmp/
     mode: 0440
   when: "'cirros' not in _images.stdout"
+  tags:
+    - glance
 
 - name: create the cirros image
   command: openstack {{ openstack.admin_credentials }} image create "cirros" --file /tmp/cirros-0.3.3-x86_64-disk.img  --disk-format qcow2 --container-format bare --public
   when: "'cirros' not in _images.stdout"
+  tags:
+    - glance

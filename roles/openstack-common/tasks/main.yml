@@ -1,12 +1,16 @@
 # Install required packages
 - name: get the pike packages
   apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
+  tags:
+    - environment
 
 - name: install keyring
   apt: pkg={{item}} state=present
   with_items:
     - ubuntu-cloud-keyring
     - software-properties-common
+  tags:
+    - environment
 
 - name: install packages
   apt:
@@ -16,4 +20,6 @@
     allow_unauthenticated: yes
   with_items:
     - python-openstackclient
+  tags:
+    - environment
 

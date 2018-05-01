@@ -7,6 +7,7 @@
     state: present
   tags:
     - etcd
+    - environment
 
 - name: Ensure the system user 'etcd' exists
   user:
@@ -18,6 +19,7 @@
     system: yes
   tags:
     - etcd
+    - environment
 
 - name: Create etcd directories
   file:
@@ -31,6 +33,7 @@
     - "{{etcd_download_dir}}"
   tags:
     - etcd
+    - environment
 
 - name: Downloading official etcd release
   get_url:
@@ -39,6 +42,7 @@
     mode: 0755
   tags:
     - etcd
+    - environment
 
 - name: Unzip downloaded file
   unarchive:
@@ -48,6 +52,7 @@
     creates: "{{etcd_download_dir}}/etcd-v{{etcd_version}}-linux-amd64/etcd"
   tags:
     - etcd
+    - environment
 
 - name: Copy etcd binaries to destination directory
   copy:
@@ -62,13 +67,14 @@
     - etcdctl
   tags:
     - etcd
+    - environment
 
 - name: Combine etcd_settings and etcd_settings_user (if defined)
   set_fact:
     etcd_settings: "{{etcd_settings | combine(etcd_settings_user|default({})) }}"
   tags:
     - etcd
-    - etcd-systemd
+    - environment
 
 - name: Create etcd configuration
   template:
@@ -76,6 +82,7 @@
     dest: /etc/etcd/etcd.conf.yml
   tags:
     - etcd
+    - environment
 
 - name: Create systemd unit file
   copy:
@@ -88,14 +95,18 @@
     - reload systemd
   tags:
     - etcd
-    - etcd-systemd
+    - environment
 
 - meta: flush_handlers
+  tags:
+    - etcd
+    - environment
 
 - name: Enable and start etcd
   service:
     name: etcd
     enabled: yes
     state: started
-  tags:
+   tags:
     - etcd
+    - environment

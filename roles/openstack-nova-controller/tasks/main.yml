@@ -13,58 +13,89 @@
     - nova-novncproxy
     - nova-scheduler
     - nova-placement-api
+  tags:
+    - nova
 
 # Install and configure Nova
 - name: create a table for nova api
   mysql_db: name=nova_api state=present
+  tags:
+    - nova
 
 - name: create a table for nova
   mysql_db: name=nova state=present
+  tags:
+    - nova
 
 - name: create a table for nova cell0
   mysql_db: name=nova_cell0 state=present
+  tags:
+    - nova
 
 - name: enable db access 1
   command: mysql -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  tags:
+    - nova
 
 - name: enable db access 2
   command: mysql  -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  tags:
+    - nova
 
 - name: enable db access 3
   command: mysql -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  tags:
+    - nova
 
 - name: enable db access 4
   command: mysql  -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  tags:
+    - nova
 
 - name: enable db access 3
   command: mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  tags:
+    - nova
 
 - name: enable db access 4
   command: mysql  -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  tags:
+    - nova
 
 - name: nova config files
   template: src={{item}}.j2 dest=/etc/nova/{{item}}
   with_items:
       - nova.conf
   notify: restart nova
+  tags:
+    - nova
 
 - name: populate the nova-api database
   shell: su -s /bin/sh -c "nova-manage api_db sync" nova
+  tags:
+    - nova
 
 - name: Register the cell0 database
   shell: su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+  tags:
+    - nova
 
 - name: List the nova cells
   shell: su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
   register: nova_cells
+  tags:
+    - nova
 
 - name: Create the cell1 cell
   shell: su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
   when: "'cell1' not in nova_cells.stdout"
+  tags:
+    - nova
 
 - name: Populate the nova database
   shell: su -s /bin/sh -c "nova-manage db sync" nova
-
+  tags:
+    - nova
 
 - name: restart nova
   service: name={{ item }} state=restarted enabled=true
@@ -74,46 +105,68 @@
       - nova-scheduler
       - nova-conductor
       - nova-novncproxy
+  tags:
+    - nova
 
 - name: flush handlers in case of changed config
   meta: flush_handlers
+  tags:
+    - nova
 
 - name: wait for nova and placement to wake up
   pause: seconds=10
+  tags:
+    - nova
 
 
 # Create Nova user, service, and endpoint
 - name: collect services
   command: openstack {{ openstack.args }} service list
   register: _services
+  tags:
+    - nova
 
 - name: collect users
   command: openstack {{ openstack.args }} user list
   register: _users
+  tags:
+    - nova
 
 - name: collect roles
   command: openstack {{ openstack.args }} role list
   register: _roles
+  tags:
+    - nova
 
 - name: collect projects
   command: openstack {{ openstack.args }} project list
   register: _projects
+  tags:
+    - nova
 
 - name: collect domains
   command: openstack {{ openstack.args }} domain list
   register: _domains
+  tags:
+    - nova
 
 - name: add nova user
   command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} nova
   when: "'nova' not in _users.stdout"
+  tags:
+    - nova
 
 - name: add admin role to nova user
   command: openstack {{openstack.args}} role add --project service --user nova admin
   when: "'nova' not in _users.stdout"
+  tags:
+    - nova
 
 - name: add nova service
   command: openstack {{openstack.args}} service create --name nova --description "Openstack Compute" compute
   when: "'nova' not in _services.stdout"
+  tags:
+    - nova
 
 - name: add nova endpoints
   command: openstack {{openstack.args}} endpoint create --region RegionOne compute {{item.a}} http://controller:{{ item.b }}/v2.1/%\(tenant_id\)s
@@ -122,19 +175,27 @@
       - {a: "internal", b: 8774}
       - {a: "admin", b: 8774}
   when: "'nova' not in _services.stdout"
+  tags:
+    - nova
 
 # Create Placement user, service, and endpoint
 - name: add placement user
   command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} placement
   when: "'placement' not in _users.stdout"
+  tags:
+    - nova
 
 - name: add admin role to placement user
   command: openstack {{openstack.args}} role add --project service --user placement admin
   when: "'placement' not in _users.stdout"
+  tags:
+    - nova
 
 - name: add placement service
   command: openstack {{openstack.args}} service create --name placement --description "Placement API" placement
   when: "'placement' not in _services.stdout"
+  tags:
+    - nova
 
 - name: add nova endpoints
   command: openstack {{openstack.args}} endpoint create --region RegionOne placement {{item.a}} http://controller:{{ item.b }}
@@ -143,11 +204,16 @@
       - {a: "internal", b: 8778}
       - {a: "admin", b: 8778}
   when: "'placement' not in _services.stdout"
-
+  tags:
+    - nova
 
 - name: wait for nova and placement to wake up
   pause: seconds=10
+  tags:
+    - nova
 
 - name: Add compute node to cell database
   shell: su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+  tags:
+    - nova
 

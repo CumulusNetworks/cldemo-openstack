@@ -3,7 +3,10 @@
 # which interfaces are neighbors and networks come from the group_vars/all file.
 - name: install ifupdown2
   apt: pkg=ifupdown2 state=present update_cache=yes
-
+  tags:
+    - server
+    - environment
+    
 # Legacy ifupdown requires its own template, so we broke it out into a seperate
 # role. In theory, ifupdown2 is capable of running on hosts, but it takes some
 # work to install without having it conflict with other packages. For this demo,
@@ -13,7 +16,13 @@
 # to the leafs. If the configuration changes, ifupdown will be reloaded.
 - name: configure /etc/network/interfaces on the host (using legacy ifupdown)
   template: src=interfaces.j2 dest=/etc/network/interfaces
-  notify: reload networking
+  notify: reload networking legacy
+  tags:
+    - server
+    - environment
 
 - name: configure /etc/hosts on the host
   template: src=hosts.j2 dest=/etc/hosts
+  tags:
+    - server
+    - environment

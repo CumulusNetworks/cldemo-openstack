@@ -4,17 +4,32 @@
   apt: pkg={{item}} state=present
   with_items:
     - rabbitmq-server
+  tags:
+    - rabbitmq
+    - environment
 
 - name: make sure mysql is running
   service: name=rabbitmq-server state=started
+  tags:
+    - rabbitmq
+    - environment
 
 - name: fetch list of users
   command: rabbitmqctl list_users
   register: _users
+  tags:
+    - rabbitmq
+    - environment
 
 - name: add openstack user to rabbitmq
   command: rabbitmqctl add_user openstack {{ openstack.admin_password }}
   when: "'openstack' not in _users.stdout"
+  tags:
+    - rabbitmq
+    - environment
 
 - name: add openstack permissions to rabbitmq
   command: rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+  tags:
+    - rabbitmq
+    - environment
