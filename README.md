@@ -1,6 +1,6 @@
 Openstack Demo
 ==============
-This demo is an ansible playbook that installs Openstack Mitaka on the reference topology.
+This demo is an ansible playbook that installs Openstack Pike on the reference topology.
 
 This demo is written for the [cldemo-vagrant](https://github.com/cumulusnetworks/cldemo-vagrant) reference topology and utilizes
 [Routing on the Host](https://github.com/cumulusnetworks/cldemo-roh-ansible) to advertise the local VXLAN termination points.
@@ -38,11 +38,11 @@ Launch a single VM instance on the shared provider network.
 
 Create a private tenant network and launch a VM in it. Give it a floating IP address.
 
-    neutron net-create demonet
-    neutron subnet-create --name demonet --dns-nameserver 8.8.8.8 --gateway 200.0.0.1 demonet 200.0.0.0/24
-    neutron router-create demorouter
-    neutron router-interface-add demorouter demonet
-    neutron router-gateway-set demorouter provider
+    openstack network create demonet
+    openstack subnet create --name demonet --dns-nameserver 8.8.8.8 --gateway 200.0.0.1 demonet 200.0.0.0/24
+    openstack router create demorouter
+    openstack router interface-add demorouter demonet
+    openstack router gateway-set demorouter provider
     openstack server create --flavor m1.nano --image cirros --nic net-id=demonet --security-group default cirros02
     openstack ip floating create provider
     # 192.168.0.103 is assumed to be the floating IP from the last command

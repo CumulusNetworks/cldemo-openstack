@@ -8,14 +8,13 @@ libvirt_use_virtio_for_bridges=True
 verbose=True
 ec2_private_dns_show_ip=True
 api_paste_config=/etc/nova/api-paste.ini
-enabled_apis=ec2,osapi_compute,metadata
+enabled_apis = osapi_compute,metadata
 rpc_backend = rabbit
 auth_strategy = keystone
 my_ip = {{ openstack.ip[ansible_hostname] }}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 transport_url = rabbit://openstack:{{ openstack.admin_password }}@controller
-
 
 [glance]
 api_servers = http://controller:9292
