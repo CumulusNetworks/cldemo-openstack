@@ -107,6 +107,6 @@
     name: etcd
     enabled: yes
     state: started
-   tags:
+  tags:
     - etcd
     - environment
