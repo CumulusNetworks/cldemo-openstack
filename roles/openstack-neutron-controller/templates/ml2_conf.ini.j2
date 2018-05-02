@@ -6,13 +6,8 @@
 
 # If set to true, the logging level will be set to DEBUG instead of the default
 # INFO level. (boolean value)
+# Note: This option can be changed without restarting.
 #debug = false
-
-# If set to false, the logging level will be set to WARNING instead of the
-# default INFO level. (boolean value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#verbose = true
 
 # The name of a logging configuration file. This file is appended to any
 # existing logging configuration files. For details about logging configuration
@@ -20,6 +15,7 @@
 # configuration files are used then all logging configuration is set in the
 # configuration file and other logging configuration options are ignored (for
 # example, logging_context_format_string). (string value)
+# Note: This option can be changed without restarting.
 # Deprecated group/name - [DEFAULT]/log_config
 #log_config_append = <None>
 
@@ -51,13 +47,19 @@
 # is set. (boolean value)
 #use_syslog = false
 
+# Enable journald for logging. If running in a systemd environment you may wish
+# to enable journal support. Doing so will use the journal native protocol
+# which includes structured metadata in addition to log messages.This option is
+# ignored if log_config_append is set. (boolean value)
+#use_journal = false
+
 # Syslog facility to receive log lines. This option is ignored if
 # log_config_append is set. (string value)
 #syslog_log_facility = LOG_USER
 
 # Log output to standard error. This option is ignored if log_config_append is
 # set. (boolean value)
-#use_stderr = true
+#use_stderr = false
 
 # Format string to use for log messages with context. (string value)
 #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
@@ -79,7 +81,7 @@
 
 # List of package logging levels in logger=LEVEL pairs. This option is ignored
 # if log_config_append is set. (list value)
-#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
+#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,oslo_messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false
@@ -92,8 +94,31 @@
 # value)
 #instance_uuid_format = "[instance: %(uuid)s] "
 
+# Interval, number of seconds, of log rate limiting. (integer value)
+#rate_limit_interval = 0
+
+# Maximum number of logged messages per rate_limit_interval. (integer value)
+#rate_limit_burst = 0
+
+# Log level name used by rate limiting: CRITICAL, ERROR, INFO, WARNING, DEBUG
+# or empty string. Logs with level greater or equal to rate_limit_except_level
+# are not filtered. An empty string means that all levels are filtered. (string
+# value)
+#rate_limit_except_level = CRITICAL
+
 # Enables or disables fatal status of deprecations. (boolean value)
 #fatal_deprecations = false
+
+
+[l2pop]
+
+#
+# From neutron.ml2
+#
+
+# Delay within which agent is expected to update existing ports when it
+# restarts (integer value)
+#agent_boot_time = 180
 
 
 [ml2]
@@ -122,10 +147,9 @@ extension_drivers = port_security
 
 # Maximum size of an IP packet (MTU) that can traverse the underlying physical
 # network infrastructure without fragmentation when using an overlay/tunnel
-# protocol. Either set this to the same value as the global_physnet_mtu value
-# or use it to explicitly specify a physical network MTU value that differs
-# from the default global_physnet_mtu value. (integer value)
-#path_mtu = 1500
+# protocol. This option allows specifying a physical network MTU value that
+# differs from the default global_physnet_mtu value. (integer value)
+#path_mtu = 0
 
 # A list of mappings of physical networks to MTU values. The format of the
 # mapping is <physnet>:<mtu val>. This mapping allows specifying a physical
@@ -140,6 +164,10 @@ extension_drivers = port_security
 # option depend on the network type values configured in type_drivers config
 # option. (string value)
 #external_network_type = <None>
+
+# IP version of all overlay (tunnel) network endpoints. Use a value of 4 for
+# IPv4 or 6 for IPv6. (integer value)
+#overlay_ip_version = 4
 
 
 [ml2_type_flat]
@@ -169,7 +197,7 @@ flat_networks = provider
 # + IP + UDP + GENEVE header sizes. The default size for this field is 50,
 # which is the size of the Geneve header without any additional option headers.
 # (integer value)
-#max_header_size = 50
+#max_header_size = 30
 
 
 [ml2_type_gre]

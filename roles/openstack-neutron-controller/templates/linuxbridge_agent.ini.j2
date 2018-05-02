@@ -6,13 +6,8 @@
 
 # If set to true, the logging level will be set to DEBUG instead of the default
 # INFO level. (boolean value)
+# Note: This option can be changed without restarting.
 #debug = false
-
-# If set to false, the logging level will be set to WARNING instead of the
-# default INFO level. (boolean value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#verbose = true
 
 # The name of a logging configuration file. This file is appended to any
 # existing logging configuration files. For details about logging configuration
@@ -20,6 +15,7 @@
 # configuration files are used then all logging configuration is set in the
 # configuration file and other logging configuration options are ignored (for
 # example, logging_context_format_string). (string value)
+# Note: This option can be changed without restarting.
 # Deprecated group/name - [DEFAULT]/log_config
 #log_config_append = <None>
 
@@ -51,13 +47,19 @@
 # is set. (boolean value)
 #use_syslog = false
 
+# Enable journald for logging. If running in a systemd environment you may wish
+# to enable journal support. Doing so will use the journal native protocol
+# which includes structured metadata in addition to log messages.This option is
+# ignored if log_config_append is set. (boolean value)
+#use_journal = false
+
 # Syslog facility to receive log lines. This option is ignored if
 # log_config_append is set. (string value)
 #syslog_log_facility = LOG_USER
 
 # Log output to standard error. This option is ignored if log_config_append is
 # set. (boolean value)
-#use_stderr = true
+#use_stderr = false
 
 # Format string to use for log messages with context. (string value)
 #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
@@ -79,7 +81,7 @@
 
 # List of package logging levels in logger=LEVEL pairs. This option is ignored
 # if log_config_append is set. (list value)
-#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
+#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,oslo_messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false
@@ -91,6 +93,18 @@
 # The format for an instance UUID that is passed with the log message. (string
 # value)
 #instance_uuid_format = "[instance: %(uuid)s] "
+
+# Interval, number of seconds, of log rate limiting. (integer value)
+#rate_limit_interval = 0
+
+# Maximum number of logged messages per rate_limit_interval. (integer value)
+#rate_limit_burst = 0
+
+# Log level name used by rate limiting: CRITICAL, ERROR, INFO, WARNING, DEBUG
+# or empty string. Logs with level greater or equal to rate_limit_except_level
+# are not filtered. An empty string means that all levels are filtered. (string
+# value)
+#rate_limit_except_level = CRITICAL
 
 # Enables or disables fatal status of deprecations. (boolean value)
 #fatal_deprecations = false
@@ -110,18 +124,8 @@
 # value is set to 0, rpc timeout won't be changed (integer value)
 #quitting_rpc_timeout = 10
 
-# Enable suppression of ARP responses that don't match an IP address that
-# belongs to the port from which they originate. Note: This prevents the VMs
-# attached to this agent from spoofing, it doesn't protect them from other
-# devices which have the capability to spoof (e.g. bare metal or VMs attached
-# to agents without this flag set to True). Spoofing rules will not be added to
-# any ports that have port security disabled. For LinuxBridge, this requires
-# ebtables. For OVS, it requires a version that supports matching ARP headers.
-# This option will be removed in Newton so the only way to disable protection
-# will be via the port security extension. (boolean value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#prevent_arp_spoofing = true
+# Extensions list to use (list value)
+#extensions =
 
 
 [linux_bridge]
@@ -184,8 +188,32 @@ enable_vxlan = true
 # all the agents. (string value)
 #vxlan_group = 224.0.0.1
 
-# Local IP address of the VXLAN endpoints. (IP address value)
+# IP address of local overlay (tunnel) network endpoint. Use either an IPv4 or
+# IPv6 address that resides on one of the host network interfaces. The IP
+# version of this value must match the value of the 'overlay_ip_version' option
+# in the ML2 plug-in configuration file on the neutron server node(s). (IP
+# address value)
 local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
+
+# The minimum of the UDP source port range used for VXLAN communication. (port
+# value)
+# Minimum value: 0
+# Maximum value: 65535
+#udp_srcport_min = 0
+
+# The maximum of the UDP source port range used for VXLAN communication. (port
+# value)
+# Minimum value: 0
+# Maximum value: 65535
+#udp_srcport_max = 0
+
+# The UDP port used for VXLAN communication. By default, the Linux kernel
+# doesn't use the IANA assigned standard value, so if you want to use it, this
+# option must be set to 4789. It is not set by default because of backward
+# compatibiltiy. (port value)
+# Minimum value: 0
+# Maximum value: 65535
+#udp_dstport = <None>
 
 # Extension to use alongside ml2 plugin's l2population mechanism driver. It
 # enables the plugin to populate VXLAN forwarding table. (boolean value)
@@ -193,5 +221,11 @@ l2_population = true
 
 # Enable local ARP responder which provides local responses instead of
 # performing ARP broadcast into the overlay. Enabling local ARP responder is
-# not fullycompatible with the allowed-address-pairs extension. (boolean value)
+# not fully compatible with the allowed-address-pairs extension. (boolean
+# value)
 #arp_responder = false
+
+# Optional comma-separated list of <multicast address>:<vni_min>:<vni_max>
+# triples describing how to assign a multicast address to VXLAN according to
+# its VNI ID. (list value)
+#multicast_ranges =

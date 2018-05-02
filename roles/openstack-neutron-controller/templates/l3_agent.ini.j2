@@ -12,15 +12,8 @@
 # value)
 #ovs_use_veth = false
 
-# MTU setting for device. This option will be removed in Newton. Please use the
-# system-wide segment_mtu setting which the agents will take into account when
-# wiring VIFs. (integer value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#network_device_mtu = <None>
-
 # The driver used to manage the virtual interface. (string value)
-#interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+#interface_driver = <None>
 interface_driver = linuxbridge
 
 # Timeout in seconds for ovs-vsctl commands. If the timeout expires, ovs
@@ -38,8 +31,13 @@ interface_driver = linuxbridge
 # must be used for an L3 agent that runs on a compute host. 'dvr_snat' - this
 # enables centralized SNAT support in conjunction with DVR.  This mode must be
 # used for an L3 agent running on a centralized node (or in single-host
-# deployments, e.g. devstack) (string value)
-# Allowed values: dvr, dvr_snat, legacy
+# deployments, e.g. devstack). 'dvr_no_external' - this mode enables only
+# East/West DVR routing functionality for a L3 agent that runs on a compute
+# host, the North/South functionality such as DNAT and SNAT will be provided by
+# the centralized network node that is running in 'dvr_snat' mode. This mode
+# should be used when there is no external network connectivity on the compute
+# host. (string value)
+# Allowed values: dvr, dvr_snat, legacy, dvr_no_external
 #agent_mode = legacy
 
 # TCP Port used by Neutron metadata namespace proxy. (port value)
@@ -47,27 +45,19 @@ interface_driver = linuxbridge
 # Maximum value: 65535
 #metadata_port = 9697
 
-# Send this many gratuitous ARPs for HA setup, if less than or equal to 0, the
-# feature is disabled (integer value)
-#send_arp_for_ha = 3
-
-# If non-empty, the l3 agent can only configure a router that has the matching
-# router ID. (string value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#router_id =
-
 # Indicates that this L3 agent should also handle routers that do not have an
 # external network gateway configured. This option should be True only for a
 # single agent in a Neutron deployment, and may be False for all agents if all
 # routers must have an external network gateway. (boolean value)
 #handle_internal_only_routers = true
 
-# When external_network_bridge is set, each L3 agent can be associated with no
-# more than one external network. This value should be set to the UUID of that
-# external network. To allow L3 agent support multiple external networks, both
-# the external_network_bridge and gateway_external_network_id must be left
-# empty. (string value)
+# DEPRECATED: When external_network_bridge is set, each L3 agent can be
+# associated with no more than one external network. This value should be set
+# to the UUID of that external network. To allow L3 agent support multiple
+# external networks, both the external_network_bridge and
+# gateway_external_network_id must be left empty. (string value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
 #gateway_external_network_id =
 
 # With IPv6, the network used for the external gateway does not need to have an
@@ -101,13 +91,16 @@ interface_driver = linuxbridge
 # (string value)
 #external_ingress_mark = 0x2
 
-# Name of bridge used for external network traffic. This should be set to an
-# empty value for the Linux Bridge. When this parameter is set, each L3 agent
-# can be associated with no more than one external network. This option is
-# deprecated and will be removed in the M release. (string value)
-external_network_bridge =
+# DEPRECATED: Name of bridge used for external network traffic. When this
+# parameter is set, the L3 agent will plug an interface directly into an
+# external bridge which will not allow any wiring by the L2 agent. Using this
+# will result in incorrect port statuses. This option is deprecated and will be
+# removed in Ocata. (string value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#external_network_bridge =
 
-# Seconds between running periodic tasks (integer value)
+# Seconds between running periodic tasks. (integer value)
 #periodic_interval = 40
 
 # Number of separate API worker processes for service. If not specified, the
@@ -115,10 +108,10 @@ external_network_bridge =
 # (integer value)
 #api_workers = <None>
 
-# Number of RPC worker processes for service (integer value)
+# Number of RPC worker processes for service. (integer value)
 #rpc_workers = 1
 
-# Number of RPC worker processes dedicated to state reports queue (integer
+# Number of RPC worker processes dedicated to state reports queue. (integer
 # value)
 #rpc_state_report_workers = 1
 
@@ -139,6 +132,20 @@ external_network_bridge =
 # The advertisement interval in seconds (integer value)
 #ha_vrrp_advert_int = 2
 
+# Number of concurrent threads for keepalived server connection requests. More
+# threads create a higher CPU load on the agent node. (integer value)
+# Minimum value: 1
+#ha_keepalived_state_change_server_threads = (1 + <num_of_cpus>) / 2
+
+# The VRRP health check interval in seconds. Values > 0 enable VRRP health
+# checks. Setting it to 0 disables VRRP health checks. Recommended value is 5.
+# This will cause pings to be sent to the gateway IP address(es) - requires
+# ICMP_ECHO_REQUEST to be enabled on the gateway. If gateway fails, all routers
+# will be reported as master, and master election will be repeated in round-
+# robin fashion, until one of the router restore the gateway connection.
+# (integer value)
+#ha_vrrp_health_check_interval = 0
+
 # Service to handle DHCPv6 Prefix delegation. (string value)
 #pd_dhcp_driver = dibbler
 
@@ -157,13 +164,8 @@ external_network_bridge =
 
 # If set to true, the logging level will be set to DEBUG instead of the default
 # INFO level. (boolean value)
+# Note: This option can be changed without restarting.
 #debug = false
-
-# If set to false, the logging level will be set to WARNING instead of the
-# default INFO level. (boolean value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#verbose = true
 
 # The name of a logging configuration file. This file is appended to any
 # existing logging configuration files. For details about logging configuration
@@ -171,6 +173,7 @@ external_network_bridge =
 # configuration files are used then all logging configuration is set in the
 # configuration file and other logging configuration options are ignored (for
 # example, logging_context_format_string). (string value)
+# Note: This option can be changed without restarting.
 # Deprecated group/name - [DEFAULT]/log_config
 #log_config_append = <None>
 
@@ -202,13 +205,19 @@ external_network_bridge =
 # is set. (boolean value)
 #use_syslog = false
 
+# Enable journald for logging. If running in a systemd environment you may wish
+# to enable journal support. Doing so will use the journal native protocol
+# which includes structured metadata in addition to log messages.This option is
+# ignored if log_config_append is set. (boolean value)
+#use_journal = false
+
 # Syslog facility to receive log lines. This option is ignored if
 # log_config_append is set. (string value)
 #syslog_log_facility = LOG_USER
 
 # Log output to standard error. This option is ignored if log_config_append is
 # set. (boolean value)
-#use_stderr = true
+#use_stderr = false
 
 # Format string to use for log messages with context. (string value)
 #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
@@ -230,7 +239,7 @@ external_network_bridge =
 
 # List of package logging levels in logger=LEVEL pairs. This option is ignored
 # if log_config_append is set. (list value)
-#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
+#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,oslo_messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false
@@ -243,11 +252,30 @@ external_network_bridge =
 # value)
 #instance_uuid_format = "[instance: %(uuid)s] "
 
+# Interval, number of seconds, of log rate limiting. (integer value)
+#rate_limit_interval = 0
+
+# Maximum number of logged messages per rate_limit_interval. (integer value)
+#rate_limit_burst = 0
+
+# Log level name used by rate limiting: CRITICAL, ERROR, INFO, WARNING, DEBUG
+# or empty string. Logs with level greater or equal to rate_limit_except_level
+# are not filtered. An empty string means that all levels are filtered. (string
+# value)
+#rate_limit_except_level = CRITICAL
+
 # Enables or disables fatal status of deprecations. (boolean value)
 #fatal_deprecations = false
 
 
-[AGENT]
+[agent]
+
+#
+# From neutron.az.agent
+#
+
+# Availability zone of this node (string value)
+#availability_zone = nova
 
 #
 # From neutron.base.agent
@@ -260,3 +288,26 @@ external_network_bridge =
 
 # Log agent heartbeats (boolean value)
 #log_agent_heartbeats = false
+
+#
+# From neutron.l3.agent
+#
+
+# Extensions list to use (list value)
+#extensions =
+
+
+[ovs]
+
+#
+# From neutron.base.agent
+#
+
+# The interface for interacting with the OVSDB (string value)
+# Allowed values: vsctl, native
+#ovsdb_interface = native
+
+# The connection string for the OVSDB backend. Will be used by ovsdb-client
+# when monitoring and used for the all ovsdb commands when native
+# ovsdb_interface is enabled (string value)
+#ovsdb_connection = tcp:127.0.0.1:6640

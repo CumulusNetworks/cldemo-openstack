@@ -12,15 +12,8 @@
 # value)
 #ovs_use_veth = false
 
-# MTU setting for device. This option will be removed in Newton. Please use the
-# system-wide segment_mtu setting which the agents will take into account when
-# wiring VIFs. (integer value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#network_device_mtu = <None>
-
 # The driver used to manage the virtual interface. (string value)
-#interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+#interface_driver = <None>
 interface_driver = linuxbridge
 
 # Timeout in seconds for ovs-vsctl commands. If the timeout expires, ovs
@@ -70,19 +63,11 @@ enable_isolated_metadata = true
 # Location to store DHCP server config files. (string value)
 #dhcp_confs = $state_path/dhcp
 
-# Domain to use for building the hostnames. This option is deprecated. It has
-# been moved to neutron.conf as dns_domain. It will be removed in a future
-# release. (string value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#dhcp_domain = openstacklocal
-
 # Override the default dnsmasq settings with this file. (string value)
 #dnsmasq_config_file =
 
 # Comma-separated list of the DNS servers which will be used as forwarders.
 # (list value)
-# Deprecated group/name - [DEFAULT]/dnsmasq_dns_server
 #dnsmasq_dns_servers = <None>
 
 # Base log dir for dnsmasq logging. The log contains DHCP and DNS log
@@ -109,13 +94,8 @@ enable_isolated_metadata = true
 
 # If set to true, the logging level will be set to DEBUG instead of the default
 # INFO level. (boolean value)
+# Note: This option can be changed without restarting.
 #debug = false
-
-# If set to false, the logging level will be set to WARNING instead of the
-# default INFO level. (boolean value)
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#verbose = true
 
 # The name of a logging configuration file. This file is appended to any
 # existing logging configuration files. For details about logging configuration
@@ -123,6 +103,7 @@ enable_isolated_metadata = true
 # configuration files are used then all logging configuration is set in the
 # configuration file and other logging configuration options are ignored (for
 # example, logging_context_format_string). (string value)
+# Note: This option can be changed without restarting.
 # Deprecated group/name - [DEFAULT]/log_config
 #log_config_append = <None>
 
@@ -154,13 +135,19 @@ enable_isolated_metadata = true
 # is set. (boolean value)
 #use_syslog = false
 
+# Enable journald for logging. If running in a systemd environment you may wish
+# to enable journal support. Doing so will use the journal native protocol
+# which includes structured metadata in addition to log messages.This option is
+# ignored if log_config_append is set. (boolean value)
+#use_journal = false
+
 # Syslog facility to receive log lines. This option is ignored if
 # log_config_append is set. (string value)
 #syslog_log_facility = LOG_USER
 
 # Log output to standard error. This option is ignored if log_config_append is
 # set. (boolean value)
-#use_stderr = true
+#use_stderr = false
 
 # Format string to use for log messages with context. (string value)
 #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
@@ -182,7 +169,7 @@ enable_isolated_metadata = true
 
 # List of package logging levels in logger=LEVEL pairs. This option is ignored
 # if log_config_append is set. (list value)
-#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
+#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,oslo_messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN,taskflow=WARN,keystoneauth=WARN,oslo.cache=INFO,dogpile.core.dogpile=INFO
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false
@@ -195,11 +182,30 @@ enable_isolated_metadata = true
 # value)
 #instance_uuid_format = "[instance: %(uuid)s] "
 
+# Interval, number of seconds, of log rate limiting. (integer value)
+#rate_limit_interval = 0
+
+# Maximum number of logged messages per rate_limit_interval. (integer value)
+#rate_limit_burst = 0
+
+# Log level name used by rate limiting: CRITICAL, ERROR, INFO, WARNING, DEBUG
+# or empty string. Logs with level greater or equal to rate_limit_except_level
+# are not filtered. An empty string means that all levels are filtered. (string
+# value)
+#rate_limit_except_level = CRITICAL
+
 # Enables or disables fatal status of deprecations. (boolean value)
 #fatal_deprecations = false
 
 
-[AGENT]
+[agent]
+
+#
+# From neutron.az.agent
+#
+
+# Availability zone of this node (string value)
+#availability_zone = nova
 
 #
 # From neutron.base.agent
@@ -212,3 +218,19 @@ enable_isolated_metadata = true
 
 # Log agent heartbeats (boolean value)
 #log_agent_heartbeats = false
+
+
+[ovs]
+
+#
+# From neutron.base.agent
+#
+
+# The interface for interacting with the OVSDB (string value)
+# Allowed values: vsctl, native
+#ovsdb_interface = native
+
+# The connection string for the OVSDB backend. Will be used by ovsdb-client
+# when monitoring and used for the all ovsdb commands when native
+# ovsdb_interface is enabled (string value)
+#ovsdb_connection = tcp:127.0.0.1:6640
