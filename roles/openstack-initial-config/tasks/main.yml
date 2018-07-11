@@ -10,19 +10,19 @@
     - configure_env
 
 - name: create flavors
-  include_task: flavors.yml
+  include: flavors.yml
   tags:
     - configure
     - configure_flavors
 
 - name: add security group rules
-  include_task: security.yml
+  include: security.yml
   tags:
     - configure
     - configure_security
 
 - name: add networks
-  include_task: networks.yml
+  include: networks.yml
   tags:
     - configure
     - configure_neutron
