@@ -15,7 +15,7 @@ openstack address scope create \
 {%-       elif value is string or value is number %}
   --{{arg}} {{value}} \
 {%-       elif value is sequence %}
-{%           for i,vi in value.items() %}
+{%           for i,v in value.items() %}
 {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
 {%-           endfor %} \
 {%-       endif %}
@@ -33,7 +33,7 @@ openstack subnet pool create \
 {%-       elif value is string or value is number %}
   --{{arg}} {{value}} \
 {%-       elif value is sequence %}
-{%           for i,vi in value.items() %}
+{%           for i,v in value.items() %}
 {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
 {%-           endfor %} \
 {%-       endif %}
@@ -51,7 +51,7 @@ openstack network create \
 {%-       elif value is string or value is number %}
   --{{arg}} {{value}} \
 {%-       elif value is sequence %}
-{%           for i,vi in value.items() %}
+{%           for i,v in value.items() %}
 {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
 {%-           endfor %} \
 {%-       endif %}
@@ -69,7 +69,7 @@ openstack subnet create \
 {%-       elif value is string or value is number %}
   --{{arg}} {{value}} \
 {%-       elif value is sequence %}
-{%           for i,vi in value.items() %}
+{%           for i,v in value.items() %}
 {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
 {%-           endfor %} \
 {%-       endif %}
