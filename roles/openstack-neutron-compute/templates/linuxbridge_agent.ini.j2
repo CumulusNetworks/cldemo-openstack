@@ -139,7 +139,7 @@
 # interfaces to be used for flat and VLAN networks. All physical networks
 # listed in network_vlan_ranges on the server should have mappings to
 # appropriate interfaces on each agent. (list value)
-physical_interface_mappings = provider:{{ openstack.provider_network.iface[ansible_hostname] }}
+physical_interface_mappings = provider:{{ openstack.public.iface[ansible_hostname] }}
 
 # List of <physical_network>:<physical_bridge> (list value)
 #bridge_mappings =

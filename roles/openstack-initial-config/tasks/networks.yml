@@ -1,0 +1,91 @@
+---
+
+- name: add shared public address scopes
+  command: >
+{% for addrscope,args in item.items() %}
+openstack {{openstack.admin_credentials}} address scope create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ addrscope }}
+{% endfor %}
+  with_items: openstack.neutron.address_scope
+
+
+- name: add shared public subnet pools
+  command: >
+{% for subpool,args in item.items() %}
+openstack {{openstack.admin_credentials}} subnet pool create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ subpool }}
+{% endfor %}
+  with_items: openstack.neutron.subnet_pool
+
+
+- name: add networks for neutron
+  command: >
+{% for network,args in item.items() %}
+openstack {{openstack.admin_credentials}} network create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ network }}
+{% endfor %}
+  with_items: openstack.neutron.network
+
+
+- name: add subnets for neutron
+  command: >
+{% for subnet,args in subnets.items() %}
+openstack {{openstack.admin_credentials}} subnet create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ subnet }}
+{% endfor %}
+
+
+
+

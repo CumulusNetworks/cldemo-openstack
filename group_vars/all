@@ -88,16 +88,106 @@ openstack:
         server02: "10.0.0.32"
         server03: "10.0.0.33"
         server04: "10.0.0.34"
-    provider_network:
-        iface:
-            server01: "eth0"
-            server02: "eth0"
-            server03: "eth0"
-            server04: "eth0"
-        cidr: "192.168.0.0/24"
-        start: "192.168.0.100"
-        end: "192.168.0.150"
-        gateway: "192.168.0.254"
+    public:
+      iface:
+        server01: "eth0"
+        server02: "eth0"
+        server03: "eth0"
+        server04: "eth0"
+    private:
+      iface:
+        server01: "eth1,eth2"
+        server02: "eth1,eth2"
+        server03: "eth1,eth2"
+        server04: "eth1,eth2"
+
+    neutron:
+      # Address scopes are similar to VRFs in that they provide isolation of subnets.
+      address_scope:
+        address_scope_ip4:
+          ip-version: 4
+          share: true
+        address_scope_ip6:
+          ip-version: 6
+          share: true
+      # Subnet pools provide the CIDR blocks from which subnets can be allocated. Specifying
+      # a default-subnet-pool simplifies subnet creation for a given address family.
+      # Without a subnet pool, the subnet must specify a subnet-range.
+      subnet_pool:
+        subnet_pool_ip4:
+          address_scope: {{ openstack.neutron.address_scope[address_scope_ip4].name }}
+          pool-prefix: "192.168.121.196/27"
+          default-prefix-length: 24
+          share: true
+          default: true
+        subnet_pool_ip6:
+          address_scope: {{ openstack.neutron.address_scope[address_scope_ip6].name }}
+          pool-prefix: "2001:dead:beef::/48"
+          default-prefix-length: 64
+          share: true
+          default: true
+      # This is the networking segment, which can contain several subnets.
+      # Think of this as the layer2 construct.
+      network:
+        # Public/Provider networks, typically the internet access for openstack cluster
+        - provider:
+            name: public
+            provider-physical-network: provider
+            provider-network-type: flat
+            external: true
+            default: true
+            share: true
+        # Private/Project networks
+        - net1:
+            name: net1
+            project: admin
+            provider-physical-network: provider
+            provider-network-type: vlan
+            provider-segment: 11
+        - net2:
+            name: net2
+            project: admin
+            provider-physical-network: provider
+            provider-network-type: vlan
+            provider-segment: 12
+      subnet:
+        - external_ipv4:
+            name: "public_ipv4"
+            network: {{ openstack.neutron.network[provider].name }}
+            ip-version: 4
+            subnet-pool: {{ openstack.neutron.subnet_pool[subnet_pool_ipv4].name }}
+            prefix-length: 24
+            dns-nameserver: "8.8.8.8"
+            gateway: "192.168.121.1"
+        - external_ipv6:
+            name: "public_ipv6"
+            network: {{ openstack.neutron.network[provider].name }}
+            ip-version: 6
+            subnet-pool: {{ openstack.neutron.subnet_pool[subnet_pool_ipv6].name }}
+            prefix-length: 64
+            ipv6-ra-mode: slaac
+            ipv6-address-mode: slaac
+            dns-nameserver: "2001:4860:4860::8888"
+            gateway: "2001:dead:beef::1"
+        - subnet1_ipv4:
+            name: subnet1
+            network: {{ openstack.neutron.network[net1].name }}
+            subnet-range: "172.16.11.0/24"
+            allocation-pool:
+              start: "172.16.11.10"
+              end: "172.16.11.30"
+            gateway: "172.16.11.1"
+            disable-dhcp: true
+        - subnet2_ipv4:
+            name: subnet2
+            network: {{ openstack.neutron.network[net2].name }}
+            subnet-range: "172.16.12.0/24"
+            floating_ip:
+              start: "172.16.12.10"
+              end: "172.16.12.30"
+            gateway: "172.16.12.1"
+
+
     admin_token: "ac014aaa2beb079192be"
     admin_password: "CumulusLinux"
     demo_password: "demo"

@@ -1,0 +1,78 @@
+#!/bin/bash
+
+{% set address_scopes = openstack.neutron.address_scope | d() %}
+{% set subnet_pools   = openstack.neutron.subnet_pool   | d() %}
+{% set networks       = openstack.neutron.network       | d() %}
+{% set subnets        = openstack.neutron.subnet        | d() %}
+
+{% for addrscope,args in address_scopes.items() %}
+openstack address scope create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ addrscope }}
+{% endfor %}
+
+{% for subpool,args in subnet_pools.items() %}
+openstack subnet pool create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ subpool }}
+{% endfor %}
+
+{% for network,args in networks.items() %}
+openstack network create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ network }}
+{% endfor %}
+
+{% for subnet,args in subnets.items() %}
+openstack subnet create \
+{%-   for arg,value in args.items() %}
+{%-       if value == True %}
+  --{{arg}} \
+{%-       elif value == False %}
+{%-       elif value == None %}
+{%-       elif value is string or value is number %}
+  --{{arg}} {{value}} \
+{%-       elif value is sequence %}
+{%           for i,vi in value.items() %}
+{%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+{%-           endfor %} \
+{%-       endif %}
+{%-   endfor %}
+  {{ subnet }}
+{% endfor %}

@@ -1,0 +1,21 @@
+---
+
+- name: add icmp security rule
+  command: openstack {{openstack.admin_credentials}} security group rule create --proto icmp default
+  tags:
+    - configure
+
+- name: add ssh security rule
+  command: openstack {{openstack.admin_credentials}} security group rule create --proto tcp --dst-port 22 default
+  tags:
+    - configure
+
+- name: add icmp security rule for demo user
+  command: openstack {{openstack.demo_credentials}} security group rule create --proto icmp default
+  tags:
+    - configure
+
+- name: add ssh security rule for demo user
+  command: openstack {{openstack.demo_credentials}} security group rule create --proto tcp --dst-port 22 default
+  tags:
+    - configure
