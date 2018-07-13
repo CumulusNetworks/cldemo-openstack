@@ -119,13 +119,13 @@ openstack:
       subnet_pool:
         subnet_pool_ip4:
           address_scope: address_scope_ip4
-          pool-prefix: "192.168.121.196/27"
+          pool-prefix: 192.168.121.196/27
           default-prefix-length: 24
           share: true
           default: true
         subnet_pool_ip6:
           address_scope: address_scope_ip6
-          pool-prefix: "2001:dead:beef::/48"
+          pool-prefix: 2001:dead:beef::/48
           default-prefix-length: 64
           share: true
           default: true
@@ -155,40 +155,40 @@ openstack:
           provider-segment: 12
       subnet:
         external_ipv4:
-          name: "public_ipv4"
+          name: public_ipv4
           network: provider
           ip-version: 4
           subnet-pool: subnet_pool_ipv4
           prefix-length: 24
-          dns-nameserver: "8.8.8.8"
-          gateway: "192.168.121.1"
+          dns-nameserver: 8.8.8.8
+          gateway: 192.168.121.1
         external_ipv6:
-          name: "public_ipv6"
+          name: public_ipv6
           network: provider
           ip-version: 6
           subnet-pool: subnet_pool_ipv6
           prefix-length: 64
           ipv6-ra-mode: slaac
           ipv6-address-mode: slaac
-          dns-nameserver: "2001:4860:4860::8888"
-          gateway: "2001:dead:beef::1"
+          dns-nameserver: 2001:4860:4860::8888
+          gateway: 2001:dead:beef::1
         subnet1_ipv4:
           name: subnet1
           network: net1
-          subnet-range: "172.16.11.0/24"
+          subnet-range: 172.16.11.0/24
           allocation-pool:
-            start: "172.16.11.10"
-            end: "172.16.11.30"
-          gateway: "172.16.11.1"
+            start: 172.16.11.10
+            end: 172.16.11.30
+          gateway: 172.16.11.1
           disable-dhcp: true
         subnet2_ipv4:
           name: subnet2
           network: net2
-          subnet-range: "172.16.12.0/24"
+          subnet-range: 172.16.12.0/24
           floating_ip:
-            start: "172.16.12.10"
-            end: "172.16.12.30"
-          gateway: "172.16.12.1"
+            start: 172.16.12.10
+            end: 172.16.12.30
+          gateway: 172.16.12.1
 
 
     admin_token: "ac014aaa2beb079192be"
