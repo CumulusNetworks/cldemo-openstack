@@ -118,13 +118,13 @@ openstack:
       # Without a subnet pool, the subnet must specify a subnet-range.
       subnet_pool:
         subnet_pool_ip4:
-          address_scope: address_scope_ip4
+          address-scope: address_scope_ip4
           pool-prefix: 192.168.121.196/27
           default-prefix-length: 24
           share: true
           default: true
         subnet_pool_ip6:
-          address_scope: address_scope_ip6
+          address-scope: address_scope_ip6
           pool-prefix: 2001:dead:beef::/48
           default-prefix-length: 64
           share: true
