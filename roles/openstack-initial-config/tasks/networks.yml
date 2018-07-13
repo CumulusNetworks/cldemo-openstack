@@ -19,23 +19,23 @@
 - name: configure address scopes
   become: yes
   command: >
-      bash -c \"source /root/admin-openrc;
-      openstack address scope create \
-      {%   for arg,value in openstack.neutron.address_scope[item].items() %}
-      {%       if value == True %}
-        --{{arg}} \
-      {%       elif value == False %}
-      {%       elif value == None %}
-      {%       elif value is string or value is number %}
-        --{{arg}} {{value}} \
-      {%       elif value is sequence %}
-      {%           for i,v in value.items() %}
+      bash -c "source /root/admin-openrc;
+      openstack address scope create
+      {%-   for arg,value in openstack.neutron.address_scope[item].items() %}
+      {%-       if value == True %}
+        --{{arg}}
+      {%-       elif value == False %}
+      {%-       elif value == None %}
+      {%-       elif value is string or value is number %}
+        --{{arg}} {{value}}
+      {%-       elif value is sequence %}
+      {%-           for i,v in value.items() %}
       {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
-      {%           endfor %} \
-      {%       endif %}
-      {%   endfor %}
+      {%-           endfor %}
+      {%-       endif %}
+      {%-   endfor %}
         {{ item }}
-      \"
+      "
   with_items: "{{ openstack.neutron.address_scope }}"
 
 - name: copy neutron configuration script
