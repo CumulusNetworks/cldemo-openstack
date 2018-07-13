@@ -37,8 +37,65 @@
          {{ item }}"
   with_items: "{{ openstack.neutron.address_scope }}"
 
-- name: copy neutron configuration script
-  template: src=network_config.j2  dest=/tmp/network_config.sh mode='0755'
+- name: configure subnet pools
+  become: yes
+  command: >
+      bash -c "source /root/admin-openrc;
+      openstack subnet pool create
+      {%   for arg,value in openstack.neutron.subnet_pool[item].items() -%}
+      {%       if value == True -%}
+         --{{arg}} \
+      {%       elif value == False -%}
+      {%       elif value == None -%}
+      {%       elif value is string or value is number -%}
+         --{{arg}} {{value}} \
+      {%       elif value is sequence -%}
+      {%           for i,v in value.items() -%}
+      {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%           endfor %} \
+      {%       endif %}
+      {%   endfor %}
+         {{ item }}"
+  with_items: "{{ openstack.neutron.subnet_pool }}"
 
-- name: execute neutron config script
-  shell: /tmp/network_config.sh
+- name: configure subnet pools
+  become: yes
+  command: >
+      bash -c "source /root/admin-openrc;
+      openstack network create
+      {%   for arg,value in openstack.neutron.network[item].items() -%}
+      {%       if value == True -%}
+         --{{arg}} \
+      {%       elif value == False -%}
+      {%       elif value == None -%}
+      {%       elif value is string or value is number -%}
+         --{{arg}} {{value}} \
+      {%       elif value is sequence -%}
+      {%           for i,v in value.items() -%}
+      {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%           endfor %} \
+      {%       endif %}
+      {%   endfor %}
+         {{ item }}"
+  with_items: "{{ openstack.neutron.network }}"
+
+- name: configure subnet pools
+  become: yes
+  command: >
+      bash -c "source /root/admin-openrc;
+      openstack subnet create
+      {%   for arg,value in openstack.neutron.subnet[item].items() -%}
+      {%       if value == True -%}
+         --{{arg}} \
+      {%       elif value == False -%}
+      {%       elif value == None -%}
+      {%       elif value is string or value is number -%}
+         --{{arg}} {{value}} \
+      {%       elif value is sequence -%}
+      {%           for i,v in value.items() -%}
+      {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%           endfor %} \
+      {%       endif %}
+      {%   endfor %}
+         {{ item }}"
+  with_items: "{{ openstack.neutron.subnet }}"
