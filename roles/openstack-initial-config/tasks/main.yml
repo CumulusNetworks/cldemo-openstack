@@ -1,7 +1,16 @@
 ---
 
-- name: create environment scripts
+- name: create environment scripts for cumulus user
   template: src={{item}}.j2 dest=/home/cumulus/{{item}} mode=0777
+  with_items:
+      - admin-openrc
+      - demo-openrc
+  tags:
+    - configure
+    - configure_env
+
+- name: create environment scripts for root user
+  template: src={{item}}.j2 dest=/home/root/{{item}} mode=0777
   with_items:
       - admin-openrc
       - demo-openrc

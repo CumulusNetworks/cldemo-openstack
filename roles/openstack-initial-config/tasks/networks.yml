@@ -18,23 +18,21 @@
 
 - name: configure address scopes
   command: >
-      "{% for addrscope,args in item.items() %}
-      openstack {{ openstack.neutron_credentials }} address scope create
-      {%-   for arg,value in args.items() %}
-      {%-       if value == True %}
-        --{{arg}}
-      {%-       elif value == False %}
-      {%-       elif value == None %}
-      {%-       elif value is string or value is number %}
-        --{{arg}} {{value}}
-      {%-       elif value is sequence %}
+      openstack {{ openstack.neutron_credentials }} address scope create \
+      {%   for arg,value in openstack.neutron.address_scope[item].items() %}
+      {%       if value == True %}
+        --{{arg}} \
+      {%       elif value == False %}
+      {%       elif value == None %}
+      {%       elif value is string or value is number %}
+        --{{arg}} {{value}} \
+      {%       elif value is sequence %}
       {%           for i,v in value.items() %}
-      {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
-      {%-           endfor %}
-      {%-       endif %}
-      {%-   endfor %}
-        {{ addrscope }}
-      {% endfor %}"
+      {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%           endfor %} \
+      {%       endif %}
+      {%   endfor %}
+        {{ item }}
   with_items: "{{ openstack.neutron.address_scope }}"
 
 - name: copy neutron configuration script
