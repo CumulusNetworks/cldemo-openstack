@@ -18,19 +18,19 @@
 
 # Collect address scope data to avoid duplication errors
 - name: collect address scopes
-  command: openstack {{ openstack.args }} address scope list
+  command: openstack {{ openstack.admin_credentials }} address scope list
   register: _address_scopes
 
 - name: collect subnet pools
-  command: openstack {{ openstack.args }} subnet pool list
+  command: openstack {{ openstack.admin_credentials }} subnet pool list
   register: _subnet_pools
 
 - name: collect networks
-  command: openstack {{ openstack.args }} network list
+  command: openstack {{ openstack.admin_credentials }} network list
   register: _networks
 
 - name: collect subnets
-  command: openstack {{ openstack.args }} subnet list
+  command: openstack {{ openstack.admin_credentials }} subnet list
   register: _subnets
 
 
