@@ -18,24 +18,24 @@
 
 - name: configure address scopes
   command: >
-  "{% set address_scopes = openstack.neutron.address_scope | d() %}
-  {% for addrscope,args in address_scopes.items() %}
-  openstack {{ openstack.neutron_credentials }} address scope create
-  {%-   for arg,value in args.items() %}
-  {%-       if value == True %}
-    --{{arg}}
-  {%-       elif value == False %}
-  {%-       elif value == None %}
-  {%-       elif value is string or value is number %}
-    --{{arg}} {{value}}
-  {%-       elif value is sequence %}
-  {%           for i,v in value.items() %}
-  {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
-  {%-           endfor %}
-  {%-       endif %}
-  {%-   endfor %}
-    {{ addrscope }}
-  {% endfor %}"
+      "{% set address_scopes = openstack.neutron.address_scope | d() %}
+      {% for addrscope,args in address_scopes.items() %}
+      openstack {{ openstack.neutron_credentials }} address scope create
+      {%-   for arg,value in args.items() %}
+      {%-       if value == True %}
+        --{{arg}}
+      {%-       elif value == False %}
+      {%-       elif value == None %}
+      {%-       elif value is string or value is number %}
+        --{{arg}} {{value}}
+      {%-       elif value is sequence %}
+      {%           for i,v in value.items() %}
+      {%-              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%-           endfor %}
+      {%-       endif %}
+      {%-   endfor %}
+        {{ addrscope }}
+      {% endfor %}"
 
 - name: copy neutron configuration script
   template: src=network_config.j2  dest=/tmp/network_config.sh mode='0755'
