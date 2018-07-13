@@ -16,6 +16,24 @@
     - local
   when: global.save_local
 
+# Collect address scope data to avoid duplication errors
+- name: collect address scopes
+  command: openstack {{ openstack.args }} address scope list
+  register: _address_scopes
+
+- name: collect subnet pools
+  command: openstack {{ openstack.args }} subnet pool list
+  register: _subnet_pools
+
+- name: collect networks
+  command: openstack {{ openstack.args }} network list
+  register: _networks
+
+- name: collect subnets
+  command: openstack {{ openstack.args }} subnet list
+  register: _subnets
+
+
 - name: configure address scopes
   become: yes
   command: >
@@ -35,6 +53,7 @@
       {%       endif %}
       {%   endfor %}
          {{ item }}"
+  when: "'{{ item }}' not in _address_scopes.stdout"
   with_items: "{{ openstack.neutron.address_scope }}"
 
 - name: configure subnet pools
@@ -56,6 +75,7 @@
       {%       endif %}
       {%   endfor %}
          {{ item }}"
+  when: "'{{ item }}' not in _subnet_pools.stdout"
   with_items: "{{ openstack.neutron.subnet_pool }}"
 
 - name: configure subnet pools
@@ -77,6 +97,7 @@
       {%       endif %}
       {%   endfor %}
          {{ item }}"
+  when: "'{{ item }}' not in _networks.stdout"
   with_items: "{{ openstack.neutron.network }}"
 
 - name: configure subnet pools
@@ -98,4 +119,5 @@
       {%       endif %}
       {%   endfor %}
          {{ item }}"
+  when: "'{{ item }}' not in _subnets.stdout"
   with_items: "{{ openstack.neutron.subnet }}"
