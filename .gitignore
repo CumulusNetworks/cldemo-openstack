@@ -60,3 +60,6 @@ target/
 
 # ansible stuff:
 *.retry
+
+#Pycharm
+.idea
