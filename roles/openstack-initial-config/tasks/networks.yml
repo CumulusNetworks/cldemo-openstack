@@ -17,7 +17,9 @@
   when: global.save_local
 
 - name: configure address scopes
+  become: yes
   command: >
+      source /root/admin-openrc ;
       openstack {{ openstack.neutron_credentials }} address scope create \
       {%   for arg,value in openstack.neutron.address_scope[item].items() %}
       {%       if value == True %}
