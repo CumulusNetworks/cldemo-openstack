@@ -6,7 +6,7 @@
 {% set subnets        = openstack.neutron.subnet        | d() %}
 
 {% for addrscope,args in address_scopes.items() %}
-openstack {{ openstack.neutron_credentials }} address scope create
+openstack {{ openstack.admin_credentials }} address scope create
 {%-   for arg,value in args.items() %}
 {%-       if value == True %}
   --{{arg}}
@@ -24,7 +24,7 @@ openstack {{ openstack.neutron_credentials }} address scope create
 {% endfor %}
 
 {% for subpool,args in subnet_pools.items() %}
-openstack {{ openstack.neutron_credentials }} subnet pool create
+openstack {{ openstack.admin_credentials }} subnet pool create
 {%-   for arg,value in args.items() %}
 {%-       if value == True %}
   --{{arg}}
@@ -42,7 +42,7 @@ openstack {{ openstack.neutron_credentials }} subnet pool create
 {% endfor %}
 
 {% for network,args in networks.items() %}
-openstack {{ openstack.neutron_credentials }} network create
+openstack {{ openstack.admin_credentials }} network create
 {%-   for arg,value in args.items() %}
 {%-       if value == True %}
   --{{arg}} \
@@ -60,7 +60,7 @@ openstack {{ openstack.neutron_credentials }} network create
 {% endfor %}
 
 {% for subnet,args in subnets.items() %}
-openstack {{ openstack.neutron_credentials }} subnet create
+openstack {{ openstack.admin_credentials }} subnet create
 {%-   for arg,value in args.items() %}
 {%-       if value == True %}
   --{{arg}}
