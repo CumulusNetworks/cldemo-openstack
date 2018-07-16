@@ -130,8 +130,9 @@ openstack:
           public: "{{ openstack.public.iface[ansible_hostname] }}"
           private: "{{ openstack.private.iface[ansible_hostname] }}"
         bridge_mappings:
-          bridge: eth1
-          bridge: eth2
+          bridge:
+            - eth1
+            - eth2
 
       # Address scopes are similar to VRFs in that they provide isolation of subnets.
       address_scope:
