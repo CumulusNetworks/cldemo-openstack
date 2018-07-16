@@ -129,16 +129,16 @@
 
 # List of network type driver entrypoints to be loaded from the
 # neutron.ml2.type_drivers namespace. (list value)
-type_drivers = flat,vlan,vxlan
+type_drivers = {{ openstack.neutron.ml2.type_drivers | join(',') }}
 
 # Ordered list of network_types to allocate as tenant networks. The default
 # value 'local' is useful for single-box testing but provides no connectivity
 # between hosts. (list value)
-tenant_network_types = vxlan
+tenant_network_types = {{ openstack.neutron.ml2.tenant_network_types | join(',') }}
 
 # An ordered list of networking mechanism driver entrypoints to be loaded from
 # the neutron.ml2.mechanism_drivers namespace. (list value)
-mechanism_drivers = linuxbridge,l2population
+mechanism_drivers = {{ openstack.neutron.ml2.mechanism_drivers | join(',') }}
 
 # An ordered list of extension driver entrypoints to be loaded from the
 # neutron.ml2.extension_drivers namespace. For example: extension_drivers =
@@ -179,7 +179,10 @@ extension_drivers = port_security
 # List of physical_network names with which flat networks can be created. Use
 # default '*' to allow flat networks with arbitrary physical_network names. Use
 # an empty list to disable flat networks. (list value)
-flat_networks = provider
+#flat_networks =
+{% if openstack.neutron.ml2.flat_networks is defined %}
+tunnel_id_ranges = {{ openstack.neutron.ml2.flat_networks }}
+{% endif %}
 
 
 [ml2_type_geneve]
@@ -209,7 +212,9 @@ flat_networks = provider
 # Comma-separated list of <tun_min>:<tun_max> tuples enumerating ranges of GRE
 # tunnel IDs that are available for tenant network allocation (list value)
 #tunnel_id_ranges =
-
+{% if openstack.neutron.ml2.gre_tunnel_id_range is defined %}
+tunnel_id_ranges = {{ openstack.neutron.ml2.gre_tunnel_id_range }}
+{% endif %}
 
 [ml2_type_vlan]
 
@@ -222,6 +227,9 @@ flat_networks = provider
 # networks, as well as ranges of VLAN tags on each available for allocation to
 # tenant networks. (list value)
 #network_vlan_ranges =
+{% if openstack.neutron.ml2.vlan_id_range is defined %}
+network_vlan_ranges = {{ openstack.neutron.ml2.vlan_id_range }}
+{% endif %}
 
 
 [ml2_type_vxlan]
@@ -232,7 +240,10 @@ flat_networks = provider
 
 # Comma-separated list of <vni_min>:<vni_max> tuples enumerating ranges of
 # VXLAN VNI IDs that are available for tenant network allocation (list value)
-vni_ranges = 1:1000
+#vni_ranges =
+{% if openstack.neutron.ml2.vxlan_vni_ranges is defined %}
+vni_ranges = {{ openstack.neutron.ml2.vxlan_vni_ranges }}
+{% endif %}
 
 # Multicast group for VXLAN. When configured, will enable sending all broadcast
 # traffic to this multicast group. When left unconfigured, will disable
