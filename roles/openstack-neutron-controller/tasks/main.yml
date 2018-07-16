@@ -1,3 +1,12 @@
+---
+
+- name: create config folder locally
+  file: path=config/{{ ansible_hostname }} state=directory recurse=yes
+  become: no
+  delegate_to: localhost
+  tags:
+    - local
+  when: global.save_local
 
 # Install required packages
 # Networking Option 2: Self-service networks
@@ -32,6 +41,22 @@
   command: mysql  -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
   tags:
     - neutron
+
+
+- name: create rendered flat-file of neutron configurations locally
+  template: src=network_config.j2 dest=config/{{ ansible_hostname }}/{{item}}
+  become: no
+  delegate_to: localhost
+  tags:
+    - local
+  with_items:
+      - metadata_agent.ini
+      - neutron.conf
+      - dhcp_agent.ini
+      - l3_agent.ini
+      - ml2_conf.ini
+      - linuxbridge_agent.ini
+  when: global.save_local
 
 # Configure Neutron
 - name: neutron config files

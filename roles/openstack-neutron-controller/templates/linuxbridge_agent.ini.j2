@@ -153,12 +153,9 @@ physical_interface_mappings =
 #bridge_mappings =
 {% if openstack.neutron.linux_bridge.bridge_mappings is defined %}
 bridge_mappings =
-{%-  for name,ifaces in openstack.neutron.linux_bridge.bridge_mappings.items() %}
-{%-  set outerloop = loop %}
-{%-      for iface in ifaces %}
-{%-        if loop.first and outerloop.first %}{{ name }}:{{ iface }}
-{%-        else %},{{ name }}:{{ iface }}{% endif %}
-{%-      endfor %}
+{%-   for name,iface in openstack.neutron.linux_bridge.bridge_mappings.items() %}
+{%-      if loop.first and outerloop.first %}{{ name }}:{{ iface }}
+{%-      else %},{{ name }}:{{ iface }}{% endif %}
 {%-   endfor %}
 {% endif %}
 
@@ -190,7 +187,10 @@ enable_security_group = true
 
 # Enable VXLAN on the agent. Can be enabled when agent is managed by ml2 plugin
 # using linuxbridge mechanism driver (boolean value)
-enable_vxlan = true
+#enable_vxlan =
+{% if openstack.neutron.linux_bridge.enable_vxlan is defined %}
+enable_vxlan = {% openstack.neutron.linux_bridge.enable_vxlan %}
+{% endif %}
 
 # TTL for vxlan interface protocol packets. (integer value)
 #ttl = <None>
@@ -211,7 +211,10 @@ enable_vxlan = true
 # version of this value must match the value of the 'overlay_ip_version' option
 # in the ML2 plug-in configuration file on the neutron server node(s). (IP
 # address value)
-local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
+#local_ip =
+{% if openstack.neutron.linux_bridge.local_ip is defined %}
+local_ip = {% openstack.neutron.linux_bridge.local_ip %}
+{% endif %}
 
 # The minimum of the UDP source port range used for VXLAN communication. (port
 # value)
@@ -235,7 +238,10 @@ local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
 
 # Extension to use alongside ml2 plugin's l2population mechanism driver. It
 # enables the plugin to populate VXLAN forwarding table. (boolean value)
-l2_population = true
+#l2_population = True
+{% if openstack.neutron.linux_bridge.l2_population is defined %}
+l2_population = {% openstack.neutron.linux_bridge.l2_population %}
+{% endif %}
 
 # Enable local ARP responder which provides local responses instead of
 # performing ARP broadcast into the overlay. Enabling local ARP responder is

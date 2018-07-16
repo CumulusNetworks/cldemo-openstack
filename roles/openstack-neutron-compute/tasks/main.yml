@@ -1,3 +1,12 @@
+---
+
+- name: create config folder locally
+  file: path=config/{{ ansible_hostname }} state=directory recurse=yes
+  become: no
+  delegate_to: localhost
+  tags:
+    - local
+  when: global.save_local
 
 # Install required packages
 - name: install packages
@@ -11,6 +20,20 @@
   tags:
     - neutron
 
+
+- name: create rendered flat-file of neutron configurations locally
+  template: src=network_config.j2 dest=config/{{ ansible_hostname }}/{{item}}
+  become: no
+  delegate_to: localhost
+  tags:
+    - local
+  with_items:
+      - neutron.conf
+      - linuxbridge_agent.ini
+  when: global.save_local
+
+
+# Configure Neutron
 - name: neutron config files
   template: src={{item}}.j2 dest=/etc/neutron/{{item}}
   with_items:
