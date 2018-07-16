@@ -129,11 +129,11 @@ openstack:
       linux_bridge:
         # linux_bridge
         physical_interface_mappings:
-          public: {{ openstack.public.iface[ansible_hostname] }}
-          private: {{ openstack.private.iface[ansible_hostname] }}
+          public: '{{ openstack.public.iface[ansible_hostname] }}'
+          private: '{{ openstack.private.iface[ansible_hostname] }}'
         # vxlan
         enable_vxlan: true
-        local_ip: {{ openstack.vxlan_ip[ansible_hostname] }}
+        local_ip: '{{ openstack.vxlan_ip[ansible_hostname] }}'
         l2_population: true
 
       # Address scopes are similar to VRFs in that they provide isolation of subnets.
