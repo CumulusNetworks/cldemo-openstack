@@ -129,16 +129,16 @@
 
 # List of network type driver entrypoints to be loaded from the
 # neutron.ml2.type_drivers namespace. (list value)
-type_drivers = {{ openstack.neutron.ml2.type_drivers | join(',') }}
+type_drivers = {{ openstack.neutron.ml2.type_drivers | join(',') | d() }}
 
 # Ordered list of network_types to allocate as tenant networks. The default
 # value 'local' is useful for single-box testing but provides no connectivity
 # between hosts. (list value)
-tenant_network_types = {{ openstack.neutron.ml2.tenant_network_types | join(',') }}
+tenant_network_types = {{ openstack.neutron.ml2.tenant_network_types | join(',') | d() }}
 
 # An ordered list of networking mechanism driver entrypoints to be loaded from
 # the neutron.ml2.mechanism_drivers namespace. (list value)
-mechanism_drivers = {{ openstack.neutron.ml2.mechanism_drivers | join(',') }}
+mechanism_drivers = {{ openstack.neutron.ml2.mechanism_drivers | join(',') | d() }}
 
 # An ordered list of extension driver entrypoints to be loaded from the
 # neutron.ml2.extension_drivers namespace. For example: extension_drivers =
@@ -181,7 +181,7 @@ extension_drivers = port_security
 # an empty list to disable flat networks. (list value)
 #flat_networks =
 {% if openstack.neutron.ml2.flat_networks is defined %}
-tunnel_id_ranges = {{ openstack.neutron.ml2.flat_networks }}
+flat_networks = {{ openstack.neutron.ml2.flat_networks }}
 {% endif %}
 
 

@@ -189,7 +189,7 @@ enable_security_group = true
 # using linuxbridge mechanism driver (boolean value)
 #enable_vxlan =
 {% if openstack.neutron.linux_bridge.enable_vxlan is defined %}
-enable_vxlan = {% openstack.neutron.linux_bridge.enable_vxlan %}
+enable_vxlan = {{ openstack.neutron.linux_bridge.enable_vxlan }}
 {% endif %}
 
 # TTL for vxlan interface protocol packets. (integer value)
@@ -211,7 +211,7 @@ enable_vxlan = {% openstack.neutron.linux_bridge.enable_vxlan %}
 # version of this value must match the value of the 'overlay_ip_version' option
 # in the ML2 plug-in configuration file on the neutron server node(s). (IP
 # address value)
-local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
+local_ip = {{ openstack.vxlan_ip[ansible_hostname] | d() }}
 
 
 # The minimum of the UDP source port range used for VXLAN communication. (port
@@ -238,7 +238,7 @@ local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
 # enables the plugin to populate VXLAN forwarding table. (boolean value)
 #l2_population = True
 {% if openstack.neutron.linux_bridge.l2_population is defined %}
-l2_population = {% openstack.neutron.linux_bridge.l2_population %}
+l2_population = {{ openstack.neutron.linux_bridge.l2_population }}
 {% endif %}
 
 # Enable local ARP responder which provides local responses instead of
