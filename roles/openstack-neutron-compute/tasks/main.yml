@@ -22,7 +22,7 @@
 
 
 - name: create rendered flat-file of neutron configurations locally
-  template: src=network_config.j2 dest=config/{{ ansible_hostname }}/{{item}}
+  template: src={{item}}.j2 dest=config/{{ ansible_hostname }}/{{item}}
   become: no
   delegate_to: localhost
   tags:

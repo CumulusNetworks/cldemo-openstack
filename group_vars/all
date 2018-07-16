@@ -129,8 +129,8 @@ openstack:
       linux_bridge:
         # linux_bridge
         physical_interface_mappings:
-          public: '{{ openstack.public.iface[ansible_hostname] }}'
-          private: '{{ openstack.private.iface[ansible_hostname] }}'
+          public: eth0
+          private: eth1
         # vxlan
         enable_vxlan: true
         l2_population: true
