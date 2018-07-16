@@ -99,10 +99,10 @@ openstack:
         server04: "eth0"
     private:
       iface:
-        server01: "eth1,eth2"
-        server02: "eth1,eth2"
-        server03: "eth1,eth2"
-        server04: "eth1,eth2"
+        server01: ["eth1", "eth2"]
+        server02: ["eth1", "eth2"]
+        server03: ["eth1", "eth2"]
+        server04: ["eth1", "eth2"]
 
     neutron:
       #ml2_conf
@@ -124,15 +124,16 @@ openstack:
         #gre_tunnel_id_range:
         vlan_id_range: 1:999
         vxlan_vni_ranges: 10001:10999
+
       #linuxbridge_agent
       linux_bridge:
         # linux_bridge
         physical_interface_mappings:
-          public: "{{ openstack.public.iface[ansible_hostname] }}"
-          private: "{{ openstack.private.iface[ansible_hostname] }}"
+          public: {{ openstack.public.iface[ansible_hostname] }}
+          private: {{ openstack.private.iface[ansible_hostname] }}
         # vxlan
         enable_vxlan: true
-        local_ip: "{{ openstack.vxlan_ip[ansible_hostname] }}"
+        local_ip: {{ openstack.vxlan_ip[ansible_hostname] }}
         l2_population: true
 
       # Address scopes are similar to VRFs in that they provide isolation of subnets.
