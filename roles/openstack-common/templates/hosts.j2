@@ -7,6 +7,6 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 
-{% for item in openstack.node %}
+{% for item in openstack.nodes %}
 {{item.ip}}    {{item.role}}
 {% endfor %}
