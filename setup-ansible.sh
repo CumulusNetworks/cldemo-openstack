@@ -17,3 +17,7 @@ echo '[Install Ansible] Install Ansible'
 pip install ansible
 
 echo '[Install Ansible] Done!'
+
+route del default
+route add default gw 192.168.0.2 eth0
+rm /etc/apt/sources.list.d/elasticsearch-2.x.list

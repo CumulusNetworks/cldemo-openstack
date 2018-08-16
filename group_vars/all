@@ -4,15 +4,25 @@ global:
 # networking
 
 node:
-    HOSTS12:
+    HOSTS11:
         intefaces:
             loopback:
             torbond1:
-                ipv4: "45.0.1.9/24"
-                ipv6: "2001:fee1:0:1::9/64"
+                ipv4: "45.0.1.8/24"
+                ipv6: "2001:fee1:0:1::8/64"
         openstack:
             role: controller
-            ip: "45.0.1.9"
+            ip: "45.0.1.8"
+
+#    HOSTS12:
+#        intefaces:
+#            loopback:
+#            torbond1:
+#                ipv4: "45.0.1.9/24"
+#                ipv6: "2001:fee1:0:1::9/64"
+#        openstack:
+#            role: controller
+#            ip: "45.0.1.9"
 
     HOSTD11:
         intefaces:
@@ -24,6 +34,16 @@ node:
             role: compute1
             ip: "45.0.1.4"
 
+    HOSTD12:
+        intefaces:
+            loopback:
+            torbond1:
+                ipv4: "45.0.1.5/24"
+                ipv6: "2001:fee1:0:1::5/64"
+        openstack:
+            role: compute2
+            ip: "45.0.1.5"
+
     HOSTD21:
         intefaces:
             loopback:
@@ -31,7 +51,7 @@ node:
                 ipv4: "45.0.1.6/24"
                 ipv6: "2001:fee1:0:1::6/64"
         openstack:
-            role: compute2
+            role: compute3
             ip: "45.0.1.6"
 
     HOSTD22:
@@ -41,7 +61,7 @@ node:
                 ipv4: "45.0.1.7/24"
                 ipv6: "2001:fee1:0:1::7/64"
         openstack:
-            role: compute3
+            role: compute4
             ip: "45.0.1.7"
 
 openstack:
