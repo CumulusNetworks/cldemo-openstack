@@ -6,7 +6,7 @@
 
 - name: cleanup ssim hosts
   become: yes
-  shell: "{item}"
+  shell: "{{item}}"
   with_items:
     - "ip route del default"
     - "ip route add default via 192.168.0.2 dev eth0"
