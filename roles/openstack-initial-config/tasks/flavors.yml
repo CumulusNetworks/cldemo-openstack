@@ -1,7 +1,10 @@
 ---
 
 - name: collect flavors
-  command: openstack {{ openstack.keystone.args }} flavor list
+  become: no
+  command: >
+    source ~/admin-openrc;
+    openstack flavor list
   register: _flavors
   tags:
     - configure
