@@ -1,0 +1,32 @@
+---
+
+- hosts: servers
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - openstack-common
+
+- hosts: controller
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - mysql
+    - rabbitmq
+    - memcached
+    - etcd
+    - openstack-keystone
+    - openstack-glance
+    - openstack-neutron-controller
+    - openstack-nova-controller
+    - openstack-horizon
+    - openstack-initial-config
+
+- hosts: compute
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - openstack-neutron-compute
+    - openstack-nova-compute

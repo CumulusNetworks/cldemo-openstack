@@ -18,12 +18,12 @@
     - glance
 
 - name: enable db access 1
-  command: mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  command: mysql -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '{{ openstack.keystone.admin_password }}';"
   tags:
     - glance
 
 - name: enable db access 2
-  command: mysql  -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  command: mysql  -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '{{openstack.keystone.admin_password}}';"
   tags:
     - glance
 
@@ -63,55 +63,55 @@
 
 # Create glance user, service, and endpoint
 - name: collect services
-  command: openstack {{ openstack.args }} service list
+  command: openstack {{ openstack.keystone.args }} service list
   register: _services
   tags:
     - glance
 
 - name: collect users
-  command: openstack {{ openstack.args }} user list
+  command: openstack {{ openstack.keystone.args }} user list
   register: _users
   tags:
     - glance
 
 - name: collect roles
-  command: openstack {{ openstack.args }} role list
+  command: openstack {{ openstack.keystone.args }} role list
   register: _roles
   tags:
     - glance
 
 - name: collect projects
-  command: openstack {{ openstack.args }} project list
+  command: openstack {{ openstack.keystone.args }} project list
   register: _projects
   tags:
     - glance
 
 - name: collect domains
-  command: openstack {{ openstack.args }} domain list
+  command: openstack {{ openstack.keystone.args }} domain list
   register: _domains
   tags:
     - glance
 
 - name: add glance user
-  command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} glance
+  command: openstack {{openstack.keystone.args}} user create --domain default --password {{openstack.keystone.admin_password}} glance
   when: "'glance' not in _users.stdout"
   tags:
     - glance
 
 - name: add admin role to glance user
-  command: openstack {{openstack.args}} role add --project service --user glance admin
+  command: openstack {{openstack.keystone.args}} role add --project service --user glance admin
   when: "'glance' not in _users.stdout"
   tags:
     - glance
 
 - name: add glance service
-  command: openstack {{openstack.args}} service create --name glance --description "Openstack Image" image
+  command: openstack {{openstack.keystone.args}} service create --name glance --description "Openstack Image" image
   when: "'glance' not in _services.stdout"
   tags:
     - glance
 
 - name: add glance endpoints
-  command: openstack {{openstack.args}} endpoint create --region RegionOne image {{item.a}} http://controller:{{ item.b }}
+  command: openstack {{openstack.keystone.args}} endpoint create --region RegionOne image {{item.a}} http://controller:{{ item.b }}
   with_items:
       - {a: "public", b: 9292}
       - {a: "internal", b: 9292}
@@ -129,7 +129,7 @@
 # Now add a basic image.
 
 - name: collect images
-  command: openstack {{ openstack.admin_credentials }} image list
+  command: openstack {{ openstack.keystone.admin_credentials }} image list
   register: _images
   tags:
     - glance
@@ -144,7 +144,7 @@
     - glance
 
 - name: create the cirros image
-  command: openstack {{ openstack.admin_credentials }} image create "cirros" --file /tmp/cirros-0.3.3-x86_64-disk.img  --disk-format qcow2 --container-format bare --public
+  command: openstack {{ openstack.keystone.admin_credentials }} image create "cirros" --file /tmp/cirros-0.3.3-x86_64-disk.img  --disk-format qcow2 --container-format bare --public
   when: "'cirros' not in _images.stdout"
   tags:
     - glance

@@ -2,224 +2,163 @@ global:
     save_local: true
 
 # networking
-interfaces:
-    leaf01:
-        loopback: "10.0.0.11"
-        asn: 65011
-        neighbors:
-            swp1:
-            swp2:
-        fabric:
-            swp51:
-            swp52:
-    leaf02:
-        loopback: "10.0.0.12"
-        asn: 65012
-        neighbors:
-            swp1:
-            swp2:
-        fabric:
-            swp51:
-            swp52:
-    leaf03:
-        loopback: "10.0.0.13"
-        asn: 65013
-        neighbors:
-            swp1:
-            swp2:
-        fabric:
-            swp51:
-            swp52:
-    leaf04:
-        loopback: "10.0.0.14"
-        asn: 65014
-        neighbors:
-            swp1:
-            swp2:
-        fabric:
-            swp51:
-            swp52:
-    spine01:
-        loopback: "10.0.0.21"
-        asn: 65020
-        fabric:
-            swp1:
-            swp2:
-            swp3:
-            swp4:
-    spine02:
-        loopback: "10.0.0.22"
-        asn: 65020
-        fabric:
-            swp1:
-            swp2:
-            swp3:
-            swp4:
-    server01:
-        loopback: "10.0.0.31"
-        asn: 65101
-        neighbors:
-            eth1:
-            eth2:
-    server02:
-        loopback: "10.0.0.32"
-        asn: 65102
-        neighbors:
-            eth1:
-            eth2:
-    server03:
-        loopback: "10.0.0.33"
-        asn: 65103
-        neighbors:
-            eth1:
-            eth2:
-    server04:
-        loopback: "10.0.0.34"
-        asn: 65104
-        neighbors:
-            eth1:
-            eth2:
+
+node:
+    HOSTS12:
+        intefaces:
+            loopback:
+            torbond1:
+                ipv4: "45.0.1.9/24"
+                ipv6: "2001:fee1:0:1::9/64"
+        openstack:
+            role: controller
+            ip: "45.0.1.9"
+
+    HOSTD11:
+        intefaces:
+            loopback:
+            torbond1:
+                ipv4: "45.0.1.4/24"
+                ipv6: "2001:fee1:0:1::4/64"
+        openstack:
+            role: compute1
+            ip: "45.0.1.4"
+
+    HOSTD21:
+        intefaces:
+            loopback:
+            torbond1:
+                ipv4: "45.0.1.6/24"
+                ipv6: "2001:fee1:0:1::6/64"
+        openstack:
+            role: compute2
+            ip: "45.0.1.6"
+
+    HOSTD22:
+        intefaces:
+            loopback:
+            torbond1:
+                ipv4: "45.0.1.7/24"
+                ipv6: "2001:fee1:0:1::7/64"
+        openstack:
+            role: compute3
+            ip: "45.0.1.7"
+
 openstack:
-    controller: "10.0.0.31"
-    ip:
-        server01: "10.0.0.31"
-        server02: "10.0.0.32"
-        server03: "10.0.0.33"
-        server04: "10.0.0.34"
-    vxlan_ip:
-        server01: "10.0.0.31"
-        server02: "10.0.0.32"
-        server03: "10.0.0.33"
-        server04: "10.0.0.34"
-    public:
-      iface:
-        server01: "eth0"
-        server02: "eth0"
-        server03: "eth0"
-        server04: "eth0"
-    private:
-      iface:
-        server01: ["eth1", "eth2"]
-        server02: ["eth1", "eth2"]
-        server03: ["eth1", "eth2"]
-        server04: ["eth1", "eth2"]
-
     neutron:
-      #ml2_conf
-      ml2:
-        type_drivers:
-          - flat
-          - vlan
-          - vxlan
-        tenant_network_types:
-          - vlan
-          - vxlan
-        mechanism_drivers:
-          - linuxbridge
-          - l2population
-        #network type parameters
-        flat_networks:
-          - public
-          - private
-        #gre_tunnel_id_range:
-        vlan_id_range: 1:999
-        vxlan_vni_ranges: 10001:10999
+        #ml2_conf
+        ml2:
+            type_drivers:
+              - flat
+              - vlan
+              - vxlan
+            tenant_network_types:
+              - vlan
+              - vxlan
+            mechanism_drivers:
+              - linuxbridge
+              - l2population
+            #network type parameters
+            flat_networks:
+              - provider
+            #gre_tunnel_id_range:
+            vlan_id_range: 1001:1099
+            vxlan_vni_ranges: 10001:10999
 
-      #linuxbridge_agent
-      linux_bridge:
-        # linux_bridge
-        physical_interface_mappings:
-          public: eth0
-          private: eth1
-        # vxlan
-        enable_vxlan: true
-        l2_population: true
+        #linuxbridge_agent
+        linux_bridge:
+            # linux_bridge
+            physical_interface_mappings:
+                provider: torbond1
+            # vxlan
+            enable_vxlan: true
+            l2_population: true
 
-      # Address scopes are similar to VRFs in that they provide isolation of subnets.
-      address_scope:
-        address_scope_ip4:
-          ip-version: 4
-          share: true
-        address_scope_ip6:
-          ip-version: 6
-          share: true
-      # Subnet pools provide the CIDR blocks from which subnets can be allocated. Specifying
-      # a default-subnet-pool simplifies subnet creation for a given address family.
-      # Without a subnet pool, the subnet must specify a subnet-range.
-      subnet_pool:
-        subnet_pool_ip4:
-          address-scope: address_scope_ip4
-          pool-prefix: 192.168.121.196/27
-          default-prefix-length: 24
-          share: true
-          default: true
-        subnet_pool_ip6:
-          address-scope: address_scope_ip6
-          pool-prefix: 2001:dead:beef::/48
-          default-prefix-length: 64
-          share: true
-          default: true
-      # This is the networking segment, which can contain several subnets.
-      # Think of this as the layer2 construct.
-      network:
-        # Public/Provider networks, typically the internet access for openstack cluster
-        public:
-          provider-physical-network: provider
-          provider-network-type: flat
-          external: true
-          default: true
-          share: true
-        # Private/Project networks
-        net1:
-          project: admin
-          provider-physical-network: provider
-          provider-network-type: vlan
-          provider-segment: 11
-        net2:
-          project: admin
-          provider-physical-network: provider
-          provider-network-type: vlan
-          provider-segment: 12
-      subnet:
-        public_ipv4:
-          network: public
-          ip-version: 4
-          subnet-pool: subnet_pool_ipv4
-          prefix-length: 24
-          dns-nameserver: 8.8.8.8
-          gateway: 192.168.121.1
-        public_ipv6:
-          network: public
-          ip-version: 6
-          subnet-pool: subnet_pool_ipv6
-          prefix-length: 64
-          ipv6-ra-mode: slaac
-          ipv6-address-mode: slaac
-          dns-nameserver: 2001:4860:4860::8888
-          gateway: 2001:dead:beef::1
-        subnet1_ipv4:
-          network: net1
-          subnet-range: 172.16.11.0/24
-          allocation-pool:
-            start: 172.16.11.10
-            end: 172.16.11.30
-          gateway: 172.16.11.1
-          disable-dhcp: true
-        subnet2_ipv4:
-          network: net2
-          subnet-range: 172.16.12.0/24
-          floating_ip:
-            start: 172.16.12.10
-            end: 172.16.12.30
-          gateway: 172.16.12.1
+        # Address scopes are similar to VRFs in that they provide isolation of subnets.
+        address_scope:
+            address_scope_ip4:
+                ip-version: 4
+                share: true
+            address_scope_ip6:
+                ip-version: 6
+                share: true
+        # Subnet pools provide the CIDR blocks from which subnets can be allocated. Specifying
+        # a default-subnet-pool simplifies subnet creation for a given address family.
+        # Without a subnet pool, the subnet must specify a subnet-range.
+        subnet_pool:
+            subnet_pool_ip4:
+                address-scope: address_scope_ip4
+                pool-prefix: 45.0.0.0/16
+                default-prefix-length: 24
+                share: true
+                default: true
+            subnet_pool_ip6:
+                address-scope: address_scope_ip6
+                pool-prefix: 2001:fee1:0::/48
+                default-prefix-length: 64
+                share: true
+                default: true
+        # This is the networking segment, which can contain several subnets.
+        # Think of this as the layer2 construct.
+        network:
+            # Public/Provider networks, typically the internet access for openstack cluster
+            public:
+                provider-physical-network: provider
+                provider-network-type: flat
+                external: false
+                default: true
+                share: true
+            # Private/Project networks
+            net3:
+                project: admin
+                provider-physical-network: provider
+                provider-network-type: vlan
+                provider-segment: 1003
+            net4:
+                project: admin
+                provider-physical-network: provider
+                provider-network-type: vlan
+                provider-segment: 1004
+        subnet:
+            public_ipv4:
+                network: public
+                ip-version: 4
+                subnet-pool: subnet_pool_ipv4
+                prefix-length: 24
+                dns-nameserver: 8.8.8.8
+                gateway: 45.0.1.1
+            #public_ipv6:
+            #    network: public
+            #    ip-version: 6
+            #    subnet-pool: subnet_pool_ipv6
+            #    prefix-length: 64
+            #    ipv6-ra-mode: slaac
+            #    ipv6-address-mode: slaac
+            #    dns-nameserver: 2001:4860:4860::8888
+            #    gateway: 2001:fee1:0::/48
+            subnet3_ipv4:
+                network: net3
+                subnet-range: 45.0.3.0/24
+                allocation-pool:
+                    start: 45.0.3.101
+                    end: 45.0.3.199
+                gateway: 45.0.3.1
+                disable-dhcp: true
+            subnet4_ipv4:
+                network: net4
+                subnet-range: 45.0.4.0/24
+                floating_ip:
+                    start: 45.0.4.101
+                    end: 45.0.4.199
+                gateway: 45.0.4.1
 
-
-    admin_token: "ac014aaa2beb079192be"
-    admin_password: "CumulusLinux"
-    demo_password: "demo"
-    vagrant_novnc_hack: true
-    args: "--os-token ac014aaa2beb079192be --os-url http://controller:35357/v3 --os-identity-api-version 3"
-    admin_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
-    neutron_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3"
-    demo_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
-    demo_neutron_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3"
+    keystone:
+        admin_token: "ac014aaa2beb079192be"
+        admin_password: "CumulusLinux"
+        demo_password: "demo"
+        vagrant_novnc_hack: true
+        args: "--os-token ac014aaa2beb079192be --os-url http://controller:35357/v3 --os-identity-api-version 3"
+        admin_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
+        neutron_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3"
+        demo_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
+        demo_neutron_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3"

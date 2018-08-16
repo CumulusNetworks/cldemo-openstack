@@ -212,7 +212,7 @@ enable_vxlan = {%- openstack.neutron.linux_bridge.enable_vxlan %}
 # version of this value must match the value of the 'overlay_ip_version' option
 # in the ML2 plug-in configuration file on the neutron server node(s). (IP
 # address value)
-local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
+local_ip = {{ node[ansible_hostname].openstack.ip }}
 
 # The minimum of the UDP source port range used for VXLAN communication. (port
 # value)

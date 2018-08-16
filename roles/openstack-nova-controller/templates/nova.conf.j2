@@ -1338,7 +1338,7 @@ state_path = /var/lib/nova
 # * routing_source_ip
 # * vpn_ip
 #  (string value)
-my_ip = {{ openstack.ip[ansible_hostname] }}
+my_ip = {{ node[ansible_hostname].openstack.ip }}
 
 #
 # The IP address which is used to connect to the block storage network.
@@ -3129,7 +3129,7 @@ my_ip = {{ openstack.ip[ansible_hostname] }}
 # A URL representing the messaging driver to use and its full configuration.
 # (string value)
 #transport_url = <None>
-transport_url = rabbit://openstack:{{ openstack.admin_password }}@controller
+transport_url = rabbit://openstack:{{ openstack.keystone.admin_password }}@controller
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
 # include amqp and zmq. (string value)
@@ -3467,7 +3467,7 @@ auth_strategy = keystone
 
 
 [api_database]
-connection = mysql+pymysql://nova:{{openstack.admin_password}}@controller/nova_api
+connection = mysql+pymysql://nova:{{openstack.keystone.admin_password}}@controller/nova_api
 #
 # The *Nova API Database* is a separate database which is used for information
 # which is used across *cells*. This database is mandatory since the Mitaka
@@ -4439,7 +4439,7 @@ enable = False
 
 
 [database]
-connection = mysql+pymysql://nova:{{openstack.admin_password}}@controller/nova
+connection = mysql+pymysql://nova:{{openstack.keystone.admin_password}}@controller/nova
 
 #
 # From oslo.db
@@ -5755,7 +5755,7 @@ project_domain_name = default
 user_domain_name = default
 project_name = service
 username = nova
-password = {{openstack.admin_password}}
+password = {{openstack.keystone.admin_password}}
 
 #
 # From keystonemiddleware.auth_token
@@ -7149,9 +7149,9 @@ user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = neutron
-password = {{ openstack.admin_password }}
+password = {{ openstack.keystone.admin_password }}
 service_metadata_proxy = True
-metadata_proxy_shared_secret = {{ openstack.admin_password }}
+metadata_proxy_shared_secret = {{ openstack.keystone.admin_password }}
 
 #
 # From nova.conf
@@ -8258,7 +8258,7 @@ auth_type = password
 user_domain_name = Default
 auth_url = http://controller:35357/v3
 username = placement
-password = {{openstack.admin_password}}
+password = {{openstack.keystone.admin_password}}
 
 #
 # From nova.conf

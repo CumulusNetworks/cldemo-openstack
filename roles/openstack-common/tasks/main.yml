@@ -1,3 +1,9 @@
+---
+- name: configure /etc/hosts
+  template: src=hosts.j2 dest=/etc/hosts
+  tags:
+    - environment
+
 # Install required packages
 - name: get the pike packages
   apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present

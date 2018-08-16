@@ -1,3 +1,4 @@
+---
 
 # Install required packages
 - name: install packages
@@ -33,32 +34,32 @@
     - nova
 
 - name: enable db access 1
-  command: mysql -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  command: mysql -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.keystone.admin_password }}';"
   tags:
     - nova
 
 - name: enable db access 2
-  command: mysql  -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  command: mysql  -e "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.keystone.admin_password}}';"
   tags:
     - nova
 
 - name: enable db access 3
-  command: mysql -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  command: mysql -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.keystone.admin_password }}';"
   tags:
     - nova
 
 - name: enable db access 4
-  command: mysql  -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  command: mysql  -e "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.keystone.admin_password}}';"
   tags:
     - nova
 
 - name: enable db access 3
-  command: mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  command: mysql -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '{{ openstack.keystone.admin_password }}';"
   tags:
     - nova
 
 - name: enable db access 4
-  command: mysql  -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  command: mysql  -e "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '{{openstack.keystone.admin_password}}';"
   tags:
     - nova
 
@@ -121,55 +122,55 @@
 
 # Create Nova user, service, and endpoint
 - name: collect services
-  command: openstack {{ openstack.args }} service list
+  command: openstack {{ openstack.keystone.args }} service list
   register: _services
   tags:
     - nova
 
 - name: collect users
-  command: openstack {{ openstack.args }} user list
+  command: openstack {{ openstack.keystone.args }} user list
   register: _users
   tags:
     - nova
 
 - name: collect roles
-  command: openstack {{ openstack.args }} role list
+  command: openstack {{ openstack.keystone.args }} role list
   register: _roles
   tags:
     - nova
 
 - name: collect projects
-  command: openstack {{ openstack.args }} project list
+  command: openstack {{ openstack.keystone.args }} project list
   register: _projects
   tags:
     - nova
 
 - name: collect domains
-  command: openstack {{ openstack.args }} domain list
+  command: openstack {{ openstack.keystone.args }} domain list
   register: _domains
   tags:
     - nova
 
 - name: add nova user
-  command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} nova
+  command: openstack {{openstack.keystone.args}} user create --domain default --password {{openstack.keystone.admin_password}} nova
   when: "'nova' not in _users.stdout"
   tags:
     - nova
 
 - name: add admin role to nova user
-  command: openstack {{openstack.args}} role add --project service --user nova admin
+  command: openstack {{openstack.keystone.args}} role add --project service --user nova admin
   when: "'nova' not in _users.stdout"
   tags:
     - nova
 
 - name: add nova service
-  command: openstack {{openstack.args}} service create --name nova --description "Openstack Compute" compute
+  command: openstack {{openstack.keystone.args}} service create --name nova --description "Openstack Compute" compute
   when: "'nova' not in _services.stdout"
   tags:
     - nova
 
 - name: add nova endpoints
-  command: openstack {{openstack.args}} endpoint create --region RegionOne compute {{item.a}} http://controller:{{ item.b }}/v2.1/%\(tenant_id\)s
+  command: openstack {{openstack.keystone.args}} endpoint create --region RegionOne compute {{item.a}} http://controller:{{ item.b }}/v2.1/%\(tenant_id\)s
   with_items:
       - {a: "public", b: 8774}
       - {a: "internal", b: 8774}
@@ -180,25 +181,25 @@
 
 # Create Placement user, service, and endpoint
 - name: add placement user
-  command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} placement
+  command: openstack {{openstack.keystone.args}} user create --domain default --password {{openstack.keystone.admin_password}} placement
   when: "'placement' not in _users.stdout"
   tags:
     - nova
 
 - name: add admin role to placement user
-  command: openstack {{openstack.args}} role add --project service --user placement admin
+  command: openstack {{openstack.keystone.args}} role add --project service --user placement admin
   when: "'placement' not in _users.stdout"
   tags:
     - nova
 
 - name: add placement service
-  command: openstack {{openstack.args}} service create --name placement --description "Placement API" placement
+  command: openstack {{openstack.keystone.args}} service create --name placement --description "Placement API" placement
   when: "'placement' not in _services.stdout"
   tags:
     - nova
 
 - name: add nova endpoints
-  command: openstack {{openstack.args}} endpoint create --region RegionOne placement {{item.a}} http://controller:{{ item.b }}
+  command: openstack {{openstack.keystone.args}} endpoint create --region RegionOne placement {{item.a}} http://controller:{{ item.b }}
   with_items:
       - {a: "public", b: 8778}
       - {a: "internal", b: 8778}

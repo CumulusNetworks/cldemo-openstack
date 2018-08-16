@@ -6,8 +6,6 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
-
-10.0.0.31 controller
-10.0.0.32 compute01
-10.0.0.33 compute02
-10.0.0.34 compute03
+{% for device,item in node.items() %}
+{{item.openstack.ip}}    {{item.openstack.role}}
+{% endfor %}

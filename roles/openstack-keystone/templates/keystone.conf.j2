@@ -10,7 +10,7 @@
 # effectively disabled. To completely disable `admin_token` in production
 # (highly recommended), remove AdminTokenAuthMiddleware from your paste
 # application pipelines (for example, in keystone-paste.ini). (string value)
-admin_token = {{ openstack.admin_token }}
+admin_token = {{ openstack.keystone.admin_token }}
 
 # The base public endpoint URL for Keystone that is advertised to clients
 # (NOTE: this does NOT affect how Keystone listens for connections). Defaults
@@ -548,7 +548,7 @@ log_dir = /var/log/keystone
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-connection = mysql+pymysql://keystone:{{ openstack.admin_password }}@controller/keystone
+connection = mysql+pymysql://keystone:{{ openstack.keystone.admin_password }}@controller/keystone
 
 # The SQLAlchemy connection string to use to connect to the slave database.
 # (string value)
