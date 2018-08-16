@@ -191,7 +191,7 @@ enable_security_group = true
 # using linuxbridge mechanism driver (boolean value)
 #enable_vxlan =
 {% if openstack.neutron.linux_bridge.enable_vxlan is defined %}
-enable_vxlan = {%- openstack.neutron.linux_bridge.enable_vxlan %}
+enable_vxlan = {{- openstack.neutron.linux_bridge.enable_vxlan }}
 {% endif %}
 
 
