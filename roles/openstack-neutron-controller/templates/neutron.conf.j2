@@ -550,7 +550,7 @@ notify_nova_on_port_data_changes = true
 
 # A URL representing the messaging driver to use and its full configuration.
 # (string value)
-transport_url = rabbit://openstack:{{ openstack.admin_password }}@controller
+transport_url = rabbit://openstack:{{ openstack.keystone.admin_password }}@controller
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
 # include amqp and zmq. (string value)
@@ -707,7 +707,7 @@ root_helper = sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-connection = mysql+pymysql://neutron:{{ openstack.admin_password }}@controller/neutron
+connection = mysql+pymysql://neutron:{{ openstack.keystone.admin_password }}@controller/neutron
 
 # The SQLAlchemy connection string to use to connect to the slave database.
 # (string value)
@@ -800,7 +800,7 @@ project_domain_name = default
 user_domain_name = default
 project_name = service
 username = neutron
-password = {{ openstack.admin_password }}
+password = {{ openstack.keystone.admin_password }}
 
 #
 # From keystonemiddleware.auth_token
@@ -1065,7 +1065,7 @@ user_domain_name = default
 region_name = RegionOne
 project_name = service
 username = nova
-password = {{ openstack.admin_password }}
+password = {{ openstack.keystone.admin_password }}
 
 #
 # From neutron

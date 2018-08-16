@@ -32,7 +32,7 @@ nova_metadata_host = controller
 # but it must match here and in the configuration used by the Nova Metadata
 # Server. NOTE: Nova uses the same config key, but in [neutron] section.
 # (string value)
-metadata_proxy_shared_secret = {{ openstack.admin_password }}
+metadata_proxy_shared_secret = {{ openstack.keystone.admin_password }}
 
 # Protocol to access nova metadata, http or https (string value)
 # Allowed values: http, https

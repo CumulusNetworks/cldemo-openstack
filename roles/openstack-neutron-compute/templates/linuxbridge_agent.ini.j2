@@ -144,7 +144,8 @@
 physical_interface_mappings =
 {%-   for name,iface in openstack.neutron.linux_bridge.physical_interface_mappings.items() %}
 {%-      if loop.first %} {{ name }}:{{ iface }}
-{%-      else %},{{ name }}:{{ iface }}{% endif %}
+{%-      else %},{{ name }}:{{ iface }}
+{%-      endif %}
 {%-   endfor %}
 {% endif %}
 
@@ -155,7 +156,8 @@ physical_interface_mappings =
 bridge_mappings =
 {%-  for name,iface in openstack.neutron.linux_bridge.bridge_mappings.items() %}
 {%-      if loop.first %}{{ name }}:{{ iface }}
-{%-      else %},{{ name }}:{{ iface }}{% endif %}
+{%-      else %},{{ name }}:{{ iface }}
+{%-      endif %}
 {%-   endfor %}
 {% endif %}
 
@@ -212,7 +214,7 @@ enable_vxlan = {%- openstack.neutron.linux_bridge.enable_vxlan %}
 # version of this value must match the value of the 'overlay_ip_version' option
 # in the ML2 plug-in configuration file on the neutron server node(s). (IP
 # address value)
-local_ip = {{ openstack.vxlan_ip[ansible_hostname] }}
+local_ip = {{ node[ansible_hostname].provider.ipv4 }}
 
 # The minimum of the UDP source port range used for VXLAN communication. (port
 # value)

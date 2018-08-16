@@ -8,8 +8,24 @@ leaf04
 spine01
 spine02
 
-[servers]
-server01
-server02
-server03
-server04
+[compute]
+#HOSTD11  ansible_host=45.0.1.4
+HOSTD12  ansible_host=45.0.1.5
+HOSTD21  ansible_host=45.0.1.6
+HOSTD22  ansible_host=45.0.1.7
+
+[controller]
+HOSTS11  ansible_host=45.0.1.8
+#HOSTS12  ansible_host=45.0.1.9
+
+[servers:children]
+controller
+compute
+
+#[controller:vars]
+#ansible_connection=local
+
+[servers:vars]
+ansible_ssh_user=cumulus
+ansible_ssh_pass=CumulusLinux!
+ansible_become_pass=CumulusLinux!

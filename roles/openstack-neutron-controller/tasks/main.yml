@@ -33,12 +33,12 @@
     - neutron
 
 - name: enable db access 1
-  command: mysql -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY '{{ openstack.admin_password }}';"
+  command: mysql -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY '{{ openstack.keystone.admin_password }}';"
   tags:
     - neutron
 
 - name: enable db access 2
-  command: mysql  -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '{{openstack.admin_password}}';"
+  command: mysql  -e "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '{{openstack.keystone.admin_password}}';"
   tags:
     - neutron
 
@@ -81,55 +81,55 @@
 
 # Create Neutron user, service, and endpoint
 - name: collect services
-  command: openstack {{ openstack.args }} service list
+  command: openstack {{ openstack.keystone.args }} service list
   register: _services
   tags:
     - neutron
 
 - name: collect users
-  command: openstack {{ openstack.args }} user list
+  command: openstack {{ openstack.keystone.args }} user list
   register: _users
   tags:
     - neutron
 
 - name: collect roles
-  command: openstack {{ openstack.args }} role list
+  command: openstack {{ openstack.keystone.args }} role list
   register: _roles
   tags:
     - neutron
 
 - name: collect projects
-  command: openstack {{ openstack.args }} project list
+  command: openstack {{ openstack.keystone.args }} project list
   register: _projects
   tags:
     - neutron
 
 - name: collect domains
-  command: openstack {{ openstack.args }} domain list
+  command: openstack {{ openstack.keystone.args }} domain list
   register: _domains
   tags:
     - neutron
 
 - name: add neutron user
-  command: openstack {{openstack.args}} user create --domain default --password {{openstack.admin_password}} neutron
+  command: openstack {{openstack.keystone.args}} user create --domain default --password {{openstack.keystone.admin_password}} neutron
   when: "'neutron' not in _users.stdout"
   tags:
     - neutron
 
 - name: add admin role to neutron user
-  command: openstack {{openstack.args}} role add --project service --user neutron admin
+  command: openstack {{openstack.keystone.args}} role add --project service --user neutron admin
   when: "'neutron' not in _users.stdout"
   tags:
     - neutron
 
 - name: add neutron service
-  command: openstack {{openstack.args}} service create --name neutron --description "Openstack Network" network
+  command: openstack {{openstack.keystone.args}} service create --name neutron --description "Openstack Network" network
   when: "'neutron' not in _services.stdout"
   tags:
     - neutron
 
 - name: add neutron endpoints
-  command: openstack {{openstack.args}} endpoint create --region RegionOne network {{item.a}} http://controller:{{ item.b }}
+  command: openstack {{openstack.keystone.args}} endpoint create --region RegionOne network {{item.a}} http://controller:{{ item.b }}
   with_items:
       - {a: "public", b: 9696}
       - {a: "internal", b: 9696}
