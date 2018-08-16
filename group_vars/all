@@ -5,66 +5,55 @@ global:
 
 node:
     HOSTS11:
-        intefaces:
-            loopback:
-            torbond1:
-                ipv4: "45.0.1.8/24"
-                ipv6: "2001:fee1:0:1::8/64"
-        openstack:
-            role: controller
-            ip: "45.0.1.8"
+        provider:
+            interface: torbond1
+            ipv4: "45.0.1.8/24"
+            ipv6: "2001:fee1:0:1::8/64"
 
 #    HOSTS12:
-#        intefaces:
-#            loopback:
-#            torbond1:
-#                ipv4: "45.0.1.9/24"
-#                ipv6: "2001:fee1:0:1::9/64"
-#        openstack:
-#            role: controller
-#            ip: "45.0.1.9"
+#        provider:
+#            interface: torbond1
+#            ipv4: "45.0.1.9/24"
+#            ipv6: "2001:fee1:0:1::9/64"
 
 #    HOSTD11:
-#        intefaces:
-#            loopback:
-#            torbond1:
-#                ipv4: "45.0.1.4/24"
-#                ipv6: "2001:fee1:0:1::4/64"
-#        openstack:
-#            role: compute1
-#            ip: "45.0.1.4"
+#        provider:
+#            interface: torbond1
+#            ipv4: "45.0.1.4/24"
+#            ipv6: "2001:fee1:0:1::4/64"
 
     HOSTD12:
-        intefaces:
-            loopback:
-            torbond1:
-                ipv4: "45.0.1.5/24"
-                ipv6: "2001:fee1:0:1::5/64"
-        openstack:
-            role: compute2
-            ip: "45.0.1.5"
+        provider:
+            interface: torbond1
+            ipv4: "45.0.1.5/24"
+            ipv6: "2001:fee1:0:1::5/64"
 
     HOSTD21:
-        intefaces:
-            loopback:
-            torbond1:
-                ipv4: "45.0.1.6/24"
-                ipv6: "2001:fee1:0:1::6/64"
-        openstack:
-            role: compute3
-            ip: "45.0.1.6"
+        provider:
+            interface: torbond1
+            ipv4: "45.0.1.6/24"
+            ipv6: "2001:fee1:0:1::6/64"
 
     HOSTD22:
-        intefaces:
-            loopback:
-            torbond1:
-                ipv4: "45.0.1.7/24"
-                ipv6: "2001:fee1:0:1::7/64"
-        openstack:
-            role: compute4
-            ip: "45.0.1.7"
+        provider:
+            interface: torbond1
+            ipv4: "45.0.1.7/24"
+            ipv6: "2001:fee1:0:1::7/64"
 
 openstack:
+    nodes:
+      - role: controller
+        ip: "45.0.1.8"
+#      - role: controller
+#        ip: "45.0.1.9"
+#      - role: compute1
+#        ip: "45.0.1.4"
+      - role: compute2
+        ip: "45.0.1.5"
+      - role: compute3
+        ip: "45.0.1.6"
+      - role: compute4
+        ip: "45.0.1.7"
     neutron:
         #ml2_conf
         ml2:

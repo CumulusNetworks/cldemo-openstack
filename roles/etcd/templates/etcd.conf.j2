@@ -1,10 +1,10 @@
-
+{% set controller_ip = openstack.nodes | selectattr('role','equalto','controller') | map(attribute='ip') | list | first %}
 name: {{ etcd_settings.name }}
 data-dir: {{ etcd_settings.data_dir }}
 initial-cluster-state: "{{ etcd_settings.initial_cluster_state }}"
 initial-cluster-token: "{{ etcd_settings.initial_cluster_token }}"
-initial-cluster: controller=http://{{openstack.controller}}:{{etcd_peer_port}}
-initial-advertise-peer-urls: http://{{openstack.controller}}:{{etcd_peer_port}}
-advertise-client-urls: http://{{openstack.controller}}:{{etcd_client_port}}
+initial-cluster: controller=http://{{controller_ip}}:{{etcd_peer_port}}
+initial-advertise-peer-urls: http://{{controller_ip}}:{{etcd_peer_port}}
+advertise-client-urls: http://{{controller_ip}}:{{etcd_client_port}}
 listen-peer-urls: http://0.0.0.0:{{etcd_peer_port}}
-listen-client-urls: http://{{openstack.controller}}:{{etcd_client_port}}
+listen-client-urls: http://{{controller_ip}}:{{etcd_client_port}}
