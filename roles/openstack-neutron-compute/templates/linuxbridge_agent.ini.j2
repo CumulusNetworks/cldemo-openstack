@@ -144,7 +144,8 @@
 physical_interface_mappings =
 {%-   for name,iface in openstack.neutron.linux_bridge.physical_interface_mappings.items() %}
 {%-      if loop.first %} {{ name }}:{{ iface }}
-{%-      else %},{{ name }}:{{ iface }}{% endif %}
+{%-      else %},{{ name }}:{{ iface }}
+{%-      endif %}
 {%-   endfor %}
 {% endif %}
 
@@ -155,7 +156,8 @@ physical_interface_mappings =
 bridge_mappings =
 {%-  for name,iface in openstack.neutron.linux_bridge.bridge_mappings.items() %}
 {%-      if loop.first %}{{ name }}:{{ iface }}
-{%-      else %},{{ name }}:{{ iface }}{% endif %}
+{%-      else %},{{ name }}:{{ iface }}
+{%-      endif %}
 {%-   endfor %}
 {% endif %}
 
