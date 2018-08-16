@@ -24,15 +24,15 @@ node:
 #            role: controller
 #            ip: "45.0.1.9"
 
-    HOSTD11:
-        intefaces:
-            loopback:
-            torbond1:
-                ipv4: "45.0.1.4/24"
-                ipv6: "2001:fee1:0:1::4/64"
-        openstack:
-            role: compute1
-            ip: "45.0.1.4"
+#    HOSTD11:
+#        intefaces:
+#            loopback:
+#            torbond1:
+#                ipv4: "45.0.1.4/24"
+#                ipv6: "2001:fee1:0:1::4/64"
+#        openstack:
+#            role: compute1
+#            ip: "45.0.1.4"
 
     HOSTD12:
         intefaces:

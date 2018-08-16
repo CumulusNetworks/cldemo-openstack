@@ -9,7 +9,7 @@ spine01
 spine02
 
 [compute]
-HOSTD11  ansible_host=45.0.1.4
+#HOSTD11  ansible_host=45.0.1.4
 HOSTD12  ansible_host=45.0.1.5
 HOSTD21  ansible_host=45.0.1.6
 HOSTD22  ansible_host=45.0.1.7
