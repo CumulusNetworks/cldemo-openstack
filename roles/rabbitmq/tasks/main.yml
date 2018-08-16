@@ -22,7 +22,7 @@
     - environment
 
 - name: add openstack user to rabbitmq
-  command: rabbitmqctl add_user openstack {{ openstack.admin_password }}
+  command: rabbitmqctl add_user openstack {{ openstack.keystone.admin_password }}
   when: "'openstack' not in _users.stdout"
   tags:
     - rabbitmq
