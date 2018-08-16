@@ -7,10 +7,10 @@
 - name: cleanup ssim hosts
   become: yes
   command: >
-    route del default
+    "route del default
     route add default gw 192.168.0.2 eth0
     rm /etc/apt/sources.list.d/elasticsearch-2.x.list
-    echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
+    echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4"
 
 # Install required packages
 - name: get the pike packages
