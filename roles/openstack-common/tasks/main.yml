@@ -4,9 +4,17 @@
   tags:
     - environment
 
+- name: cleanup ssim hosts
+  become: yes
+  command: >
+    route del default
+    route add default gw 192.168.0.2 eth0
+    rm /etc/apt/sources.list.d/elasticsearch-2.x.list
+    echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
+
 # Install required packages
 - name: get the pike packages
-  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present
+  apt_repository: repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main' state=present update_cache=yes
   tags:
     - environment
 
