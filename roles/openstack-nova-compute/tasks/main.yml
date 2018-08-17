@@ -16,6 +16,7 @@
   become: yes
   shell: "egrep -c '(vmx|svm)' /proc/cpuinfo"
   register: hw_acceleration
+  ignore_errors: true
   tags:
     - nova
 
