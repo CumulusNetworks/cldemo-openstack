@@ -7,6 +7,8 @@ node:
     server01:
         loopback:
             ipv4: "10.0.0.31"
+        eth0:
+            dhcp: "enable"
         bonds:
             bond0:
                 ipv4: "10.1.1.11/24"
@@ -20,6 +22,8 @@ node:
     server02:
         loopback:
             ipv4: "10.0.0.32"
+        eth0:
+            dhcp: "enable"
         bonds:
             bond0:
                 ipv4: "10.1.1.12/24"
@@ -33,6 +37,8 @@ node:
     server03:
         loopback:
             ipv4: "10.0.0.33"
+        eth0:
+            dhcp: "enable"
         bonds:
             bond0:
                 ipv4: "10.1.1.13/24"
@@ -46,6 +52,8 @@ node:
     server04:
         loopback:
             ipv4: "10.0.0.34"
+        eth0:
+            dhcp: "enable"
         bonds:
             bond0:
                 ipv4: "10.1.1.14/24"
