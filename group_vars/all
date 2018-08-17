@@ -4,56 +4,68 @@ global:
 # networking
 
 node:
-    HOSTS11:
+    server01:
+        loopback:
+            ipv4: "10.0.0.31"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.11/24"
+                members:
+                    - "eth1"
+                    - "eth2"
         provider:
-            interface: torbond1
-            ipv4: "45.0.1.8/24"
-            ipv6: "2001:fee1:0:1::8/64"
+            interface: bond0
+            ipv4: "10.1.1.11/24"
 
-#    HOSTS12:
-#        provider:
-#            interface: torbond1
-#            ipv4: "45.0.1.9/24"
-#            ipv6: "2001:fee1:0:1::9/64"
-
-#    HOSTD11:
-#        provider:
-#            interface: torbond1
-#            ipv4: "45.0.1.4/24"
-#            ipv6: "2001:fee1:0:1::4/64"
-
-    HOSTD12:
+    server02:
+        loopback:
+            ipv4: "10.0.0.32"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.12/24"
+                members:
+                    - "eth1"
+                    - "eth2"
         provider:
-            interface: torbond1
-            ipv4: "45.0.1.5/24"
-            ipv6: "2001:fee1:0:1::5/64"
+            interface: bond0
+            ipv4: "10.1.1.12/24"
 
-    HOSTD21:
+    server03:
+        loopback:
+            ipv4: "10.0.0.33"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.13/24"
+                members:
+                    - "eth1"
+                    - "eth2"
         provider:
-            interface: torbond1
-            ipv4: "45.0.1.6/24"
-            ipv6: "2001:fee1:0:1::6/64"
+            interface: bond0
+            ipv4: "10.1.1.13/24"
 
-    HOSTD22:
+    server04:
+        loopback:
+            ipv4: "10.0.0.34"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.14/24"
+                members:
+                    - "eth1"
+                    - "eth2"
         provider:
-            interface: torbond1
-            ipv4: "45.0.1.7/24"
-            ipv6: "2001:fee1:0:1::7/64"
+            interface: bond0
+            ipv4: "10.1.1.14/24"
 
 openstack:
     nodes:
       - role: controller
-        ip: "45.0.1.8"
-#      - role: controller
-#        ip: "45.0.1.9"
-#      - role: compute1
-#        ip: "45.0.1.4"
+        ip: "10.1.1.11"
       - role: compute2
-        ip: "45.0.1.5"
+        ip: "10.1.1.12"
       - role: compute3
-        ip: "45.0.1.6"
+        ip: "10.1.1.13"
       - role: compute4
-        ip: "45.0.1.7"
+        ip: "10.1.1.14"
     neutron:
         #ml2_conf
         ml2:
@@ -97,13 +109,13 @@ openstack:
         subnet_pool:
             subnet_pool_ip4:
                 address-scope: address_scope_ip4
-                pool-prefix: 45.0.0.0/16
+                pool-prefix: 10.1.0.0/16
                 default-prefix-length: 24
                 share: true
                 default: true
             subnet_pool_ip6:
                 address-scope: address_scope_ip6
-                pool-prefix: 2001:fee1:0::/48
+                pool-prefix: 2001:dead:beef::/48
                 default-prefix-length: 64
                 share: true
                 default: true
@@ -135,7 +147,7 @@ openstack:
                 subnet-pool: subnet_pool_ipv4
                 prefix-length: 24
                 dns-nameserver: 8.8.8.8
-                gateway: 45.0.1.1
+                gateway: 10.1.1.1
             #public_ipv6:
             #    network: public
             #    ip-version: 6
@@ -145,21 +157,21 @@ openstack:
             #    ipv6-address-mode: slaac
             #    dns-nameserver: 2001:4860:4860::8888
             #    gateway: 2001:fee1:0::/48
-            subnet3_ipv4:
-                network: net3
-                subnet-range: 45.0.3.0/24
+            subnet1_ipv4:
+                network: net1
+                subnet-range: 10.1.101.0/24
                 allocation-pool:
-                    start: 45.0.3.101
-                    end: 45.0.3.199
-                gateway: 45.0.3.1
+                    start: 10.1.101.101
+                    end: 10.1.101.199
+                gateway: 10.1.101.1
                 disable-dhcp: true
-            subnet4_ipv4:
-                network: net4
-                subnet-range: 45.0.4.0/24
+            subnet2_ipv4:
+                network: net2
+                subnet-range: 10.1.102.0/24
                 floating_ip:
-                    start: 45.0.4.101
-                    end: 45.0.4.199
-                gateway: 45.0.4.1
+                    start: 10.1.102.101
+                    end: 10.1.102.199
+                gateway: 10.1.102.1
 
     keystone:
         admin_token: "ac014aaa2beb079192be"

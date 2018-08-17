@@ -5,6 +5,8 @@
   become: yes
   become_method: sudo
   roles:
+    - server-common
+    - ifupdown2
     - openstack-common
 
 - hosts: controller
