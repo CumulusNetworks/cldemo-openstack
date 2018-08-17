@@ -37,8 +37,7 @@
 - name: configure address scopes
   become: yes
   command: >
-      bash -c "source /root/admin-openrc;
-      openstack address scope create
+      openstack {{openstack.keystone.admin_credentials}} address scope create
       {%   for arg,value in openstack.neutron.address_scope[item].items() -%}
       {%       if value == True -%}
          --{{arg}} \
