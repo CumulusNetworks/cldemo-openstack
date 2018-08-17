@@ -71,7 +71,7 @@ openstack:
             flat_networks:
               - provider
             #gre_tunnel_id_range:
-            vlan_id_range: 1000:1099
+            vlan_id_range: provider:1000:1099
             vxlan_vni_ranges: 10000:10999
 
         #linuxbridge_agent

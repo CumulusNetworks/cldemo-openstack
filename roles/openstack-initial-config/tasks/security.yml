@@ -1,5 +1,12 @@
 ---
 
+- name: collect security
+  become: no
+  command: openstack {{openstack.keystone.admin_credentials}} security group list
+  register: _security
+  tags:
+    - configure
+
 - name: add icmp security rule
   command: openstack {{openstack.keystone.admin_credentials}} security group rule create --proto icmp default
   tags:

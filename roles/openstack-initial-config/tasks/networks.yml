@@ -52,15 +52,14 @@
       {%           endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}"
+         {{ item }}
   when: item not in _address_scopes.stdout
   with_items: "{{ openstack.neutron.address_scope }}"
 
 - name: configure subnet pools
   become: yes
   command: >
-      bash -c "source /root/admin-openrc;
-      openstack subnet pool create
+      openstack {{openstack.keystone.admin_credentials}} subnet pool create
       {%   for arg,value in openstack.neutron.subnet_pool[item].items() -%}
       {%       if value == True -%}
          --{{arg}} \
@@ -74,15 +73,14 @@
       {%           endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}"
+         {{ item }}
   when: item not in _subnet_pools.stdout
   with_items: "{{ openstack.neutron.subnet_pool }}"
 
 - name: configure networks
   become: yes
   command: >
-      bash -c "source /root/admin-openrc;
-      openstack network create
+      openstack {{openstack.keystone.admin_credentials}} network create
       {%   for arg,value in openstack.neutron.network[item].items() -%}
       {%       if value == True -%}
          --{{arg}} \
@@ -96,15 +94,14 @@
       {%           endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}"
+         {{ item }}
   when: item not in _networks.stdout
   with_items: "{{ openstack.neutron.network }}"
 
 - name: configure subnets
   become: yes
   command: >
-      bash -c "source /root/admin-openrc;
-      openstack subnet create
+      openstack {{openstack.keystone.admin_credentials}} subnet create
       {%   for arg,value in openstack.neutron.subnet[item].items() -%}
       {%       if value == True -%}
          --{{arg}} \
@@ -118,6 +115,6 @@
       {%           endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}"
+         {{ item }}
   when:  item not in _subnets.stdout
   with_items: "{{ openstack.neutron.subnet }}"
