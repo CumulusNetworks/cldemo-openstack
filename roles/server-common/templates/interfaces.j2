@@ -1,7 +1,9 @@
-{% set intvars = interfaces[ansible_hostname] %}
-{% set neighborvars = intvars['neighbors'] %}
-# /etc/network/interfaces template for servers ({{ansible_hostname}})
-# Created by Ansible
+# {{ ansible_managed }}
+
+{### Initialize variables ###}
+{% set node = node[ansible_hostname] -%}
+{% set intvars = node.interfaces | d() -%}
+{% set bonds = node.bonds | d() -%}
 
 auto lo
 iface lo inet loopback
@@ -10,12 +12,48 @@ auto lo:0
 iface lo:0 inet static
     address {{ intvars.loopback }}/32
 
-{% for neighbor in intvars.neighbors %}
-auto {{ neighbor }}
-iface {{ neighbor }} inet static
-    address {{ intvars.loopback }}/32
-{% endfor %}
-
-
 auto eth0
 iface eth0 inet dhcp
+
+{### Build the bonds and member interfaces ###}
+{% if bonds is defined %}
+{%   for bond in bonds -%}
+{%     if bonds[bond].members is defined %}
+
+{### Loop through and create the member interfaces ###}
+{%       for mem_int in bonds[bond].members -%}
+auto {{mem_int}}
+iface {{mem_int}}
+{%         if ansible_distribution == "Ubuntu" %}
+    bond-master {{ bond }}
+{%         endif %}
+{%         if bonds[bond].mtu is defined %}
+    mtu {{ bonds[bond].mtu }}
+{%         endif %}
+{%       endfor %}
+{### Create the actual bond interface ###}
+auto {{bond}}
+{%       if bonds[bond].dhcp is defined and bonds[bond].dhcp == "enable" %}
+iface {{bond}} inet dhcp
+{%       else -%}
+iface {{bond}}
+{%       endif -%}
+{%       if ansible_distribution == "Ubuntu" %}
+    bond-slaves none
+{%       else -%}
+    bond-slaves {{bonds[bond].members | join(" ")}}
+{%       endif -%}
+{%       if bonds[bond].mtu is defined %}
+    mtu {{ bonds[bond].mtu }}
+{%       endif %}
+{%       if bonds[bond].LACP_rate is defined %}
+{%         if bonds[bond].LACP_rate == "fast" %}
+    bond-lacp-rate 1
+{%         else %}
+    bond-lacp-rate 0
+{%         endif -%}
+{%       endif %}
+
+{%     endif %}
+{%   endfor %}
+{% endif %}

@@ -182,11 +182,7 @@ iface {{mem_int}}
 {%       endfor %}
 {### Create the actual bond interface ###}
 auto {{bond}}
-{%       if bonds[bond].dhcp is defined and bonds[bond].dhcp == "enable" %}
-iface {{bond}} inet dhcp
-{%       else -%}
-iface {{bond}}
-{%       endif -%}
+iface {{bond}} inet manual
 {%       if ansible_distribution == "Ubuntu" %}
     bond-slaves none
 {%       else -%}
