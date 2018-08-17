@@ -1,13 +1,16 @@
 ---
 
 - name: collect flavors
-  command: openstack {{ openstack.keystone.admin_credentials }} flavor list
+  become: no
+  command: >
+    source ~/admin-openrc;
+    openstack flavor list
   register: _flavors
   tags:
     - configure
 
 - name: add m1.nano flavor
-  command: openstack {{openstack.keystone.admin_credentials}} flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
+  command: openstack {{openstack.keystone.args}} flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
   when: "'m1.nano' not in _flavors.stdout"
   tags:
     - configure

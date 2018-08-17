@@ -11,6 +11,7 @@
 
 - name: create environment scripts for root user
   template: src={{item}}.j2 dest=/home/root/{{item}} mode=0777
+  ignore_errors: yes
   with_items:
       - admin-openrc
       - demo-openrc

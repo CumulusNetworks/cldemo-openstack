@@ -1339,7 +1339,7 @@ state_path = /var/lib/nova
 # * vpn_ip
 #  (string value)
 #my_ip = <host_ipv4>
-my_ip = {{ node[ansible_hostname].provider.ipv4 }}
+my_ip = {{ node[ansible_hostname].provider.ipv4 | replace("/32", "") }}
 
 #
 # The IP address which is used to connect to the block storage network.
