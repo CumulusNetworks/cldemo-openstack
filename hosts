@@ -20,10 +20,3 @@ server01
 controller
 compute
 
-#[controller:vars]
-#ansible_connection=local
-
-#[servers:vars]
-#ansible_ssh_user=cumulus
-#ansible_ssh_pass=CumulusLinux!
-#ansible_become_pass=CumulusLinux!

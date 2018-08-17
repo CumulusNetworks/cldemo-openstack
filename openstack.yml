@@ -1,6 +1,6 @@
 ---
 
-- hosts: servers
+- hosts: host
   user: cumulus
   become: yes
   become_method: sudo
@@ -9,7 +9,7 @@
     - ifupdown2
     - openstack-common
 
-- hosts: controller
+- hosts: server01
   user: cumulus
   become: yes
   become_method: sudo
@@ -25,7 +25,7 @@
     - openstack-horizon
     - openstack-initial-config
 
-- hosts: compute
+- hosts: server02,server03,server04
   user: cumulus
   become: yes
   become_method: sudo
