@@ -13,7 +13,8 @@
     - nova
 
 - name: verify node supports hardware acceleration
-  command: egrep -c '(vmx|svm)' /proc/cpuinfo
+  become: yes
+  command: "egrep -c '(vmx|svm)' /proc/cpuinfo"
   register: hw_acceleration
   tags:
     - nova
