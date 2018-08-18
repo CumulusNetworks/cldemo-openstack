@@ -1,13 +1,13 @@
 ---
 
-- hosts: servers
+- hosts: HOSTS11,HOSTD12,HOSTD21,HOSTD22
   user: cumulus
   become: yes
   become_method: sudo
   roles:
     - openstack-common
 
-- hosts: controller
+- hosts: HOSTS11
   user: cumulus
   become: yes
   become_method: sudo
@@ -23,7 +23,7 @@
     - openstack-horizon
     - openstack-initial-config
 
-- hosts: compute
+- hosts: HOSTD12,HOSTD21,HOSTD22
   user: cumulus
   become: yes
   become_method: sudo
