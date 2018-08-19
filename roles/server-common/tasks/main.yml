@@ -30,7 +30,7 @@
   tags:
     - interface_setup
     - local
-  when: global.save_local is defined and global.save_local == "enable"
+  when: global.save_local is defined and global.save_local == "true"
 
 - name: create rendered flat-file /etc/network/interfaces locally
   template: src=interfaces.j2 dest=config/{{ ansible_hostname }}/interfaces
@@ -39,4 +39,4 @@
   tags:
     - interface_setup
     - local
-  when: global.save_local is defined and global.save_local == "enable"
+  when: global.save_local is defined and global.save_local == "true"
