@@ -36,9 +36,9 @@
 
 - name: configure address scopes
   become: yes
-  command: >
+  shell: >
       bash -c "source /root/admin-openrc;
-      openstack address scope create
+      openstack {{openstack.keystone.admin_credentials}} address scope create
       {%   for arg,value in openstack.neutron.address_scope[item].items() -%}
       {%       if value == True -%}
          --{{arg}} \
@@ -58,7 +58,7 @@
 
 - name: configure subnet pools
   become: yes
-  command: >
+  shell: >
       bash -c "source /root/admin-openrc;
       openstack subnet pool create
       {%   for arg,value in openstack.neutron.subnet_pool[item].items() -%}
@@ -80,7 +80,7 @@
 
 - name: configure networks
   become: yes
-  command: >
+  shell: >
       bash -c "source /root/admin-openrc;
       openstack network create
       {%   for arg,value in openstack.neutron.network[item].items() -%}
@@ -102,7 +102,7 @@
 
 - name: configure subnets
   become: yes
-  command: >
+  shell: >
       bash -c "source /root/admin-openrc;
       openstack subnet create
       {%   for arg,value in openstack.neutron.subnet[item].items() -%}

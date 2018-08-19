@@ -8,5 +8,5 @@ ff02::2 ip6-allrouters
 
 
 {% for item in openstack.nodes %}
-{{item.ip}}    {{item.role}}
+{{item.ip}}    {{item.role}} {{item.host | d()}}
 {% endfor %}
