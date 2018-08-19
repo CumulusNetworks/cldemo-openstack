@@ -165,7 +165,7 @@
   tags:
     - neutron
 
-- name: wait for nova to wake up
+- name: wait for neutron to wake up
   pause: seconds=10
   tags:
     - neutron
