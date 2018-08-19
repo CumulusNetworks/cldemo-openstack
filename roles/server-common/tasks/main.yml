@@ -14,7 +14,7 @@
 
 # This configures the interfaces and sets the default internal route to point
 # to the leafs. If the configuration changes, ifupdown will be reloaded.
-- name: configure /etc/network/interfaces on the host (using legacy ifupdown)
+- name: configure /etc/network/interfaces on the host
   template: src=interfaces.j2 dest=/etc/network/interfaces
   notify: reload networking legacy
   tags:
