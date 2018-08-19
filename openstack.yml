@@ -22,7 +22,6 @@
     - openstack-neutron-controller
     - openstack-nova-controller
     - openstack-horizon
-    - openstack-initial-config
 
 - hosts: server02,server03,server04
   user: cumulus
@@ -31,3 +30,11 @@
   roles:
     - openstack-neutron-compute
     - openstack-nova-compute
+
+
+- hosts: server01
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - openstack-initial-config
