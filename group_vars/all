@@ -91,14 +91,14 @@ openstack:
             flat_networks:
               - provider
             #gre_tunnel_id_range:
-            vlan_id_range: 1001:1099
+            vlan_id_range: provider:1001:1099
             vxlan_vni_ranges: 10001:10999
 
         #linuxbridge_agent
         linux_bridge:
             # linux_bridge
             physical_interface_mappings:
-                provider: torbond1
+                provider: bond0
             # vxlan
             enable_vxlan: true
             l2_population: true
