@@ -53,9 +53,9 @@ iface eth0 inet dhcp
 {% if bonds is defined %}
 {%   for bond in bonds -%}
 {%     if bonds[bond].members is defined %}
-
 {### Loop through and create the member interfaces ###}
 {%       for mem_int in bonds[bond].members -%}
+
 auto {{mem_int}}
 iface {{mem_int}}
 {%         if ansible_distribution == "Ubuntu" %}
@@ -65,6 +65,7 @@ iface {{mem_int}}
     mtu {{ bonds[bond].mtu }}
 {%         endif %}
 {%       endfor %}
+
 {### Create the actual bond interface ###}
 auto {{bond}}
 {%       if bonds[bond].dhcp is defined and bonds[bond].dhcp == "enable" %}
@@ -83,7 +84,15 @@ iface {{bond}}
     bond-lacp-rate 0
 {%         endif -%}
 {%       endif %}
-
+{%       if bonds[bond].LACP_mode is defined %}
+    bond-mode {{ bonds[bond].LACP_mode }}
+{%       endif %}
+{%       if bonds[bond].miimon is defined %}
+   bond-miimon {{ bonds[bond].miimon }}
+{%       endif %}
+{%       if bonds[bond].minlinks is defined %}
+   bond-miimon {{ bonds[bond].minlinks }}
+{%       endif %}
 {%     endif %}
 {%   endfor %}
 {% endif %}
