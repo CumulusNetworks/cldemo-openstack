@@ -64,7 +64,10 @@ iface {{bond}}
     bond-miimon {{ bonds[bond].miimon }}
 {%       endif %}
 {%       if bonds[bond].minlinks is defined %}
-    bond-miimon {{ bonds[bond].minlinks }}
+    bond-min-links {{ bonds[bond].minlinks }}
+{%       endif %}
+{%       if bonds[bond].ipv4 is defined %}
+    address {{ bonds[bond].ipv4 }}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
