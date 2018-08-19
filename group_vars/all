@@ -31,12 +31,16 @@ node:
 openstack:
     nodes:
       - role: controller
+        host: HOSTS11
         ip: "45.0.0.8"
       - role: compute2
+        host: HOSTD12
         ip: "45.0.0.5"
       - role: compute3
+        host: HOSTD21
         ip: "45.0.0.6"
       - role: compute4
+        host: HOSTD22
         ip: "45.0.0.7"
     neutron:
         #ml2_conf
