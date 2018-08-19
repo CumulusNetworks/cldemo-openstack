@@ -7,53 +7,37 @@ node:
     HOSTS11:
         provider:
             interface: torbond1
-            ipv4: "45.0.1.8/24"
-            ipv6: "2001:fee1:0:1::8/64"
-
-#    HOSTS12:
-#        provider:
-#            interface: torbond1
-#            ipv4: "45.0.1.9/24"
-#            ipv6: "2001:fee1:0:1::9/64"
-
-#    HOSTD11:
-#        provider:
-#            interface: torbond1
-#            ipv4: "45.0.1.4/24"
-#            ipv6: "2001:fee1:0:1::4/64"
+            ipv4: "45.0.0.8/24"
+            ipv6: "2001:fee1::8/64"
 
     HOSTD12:
         provider:
             interface: torbond1
-            ipv4: "45.0.1.5/24"
-            ipv6: "2001:fee1:0:1::5/64"
+            ipv4: "45.0.0.5/24"
+            ipv6: "2001:fee1::5/64"
 
     HOSTD21:
         provider:
             interface: torbond1
-            ipv4: "45.0.1.6/24"
-            ipv6: "2001:fee1:0:1::6/64"
+            ipv4: "45.0.0.6/24"
+            ipv6: "2001:fee1::6/64"
 
     HOSTD22:
         provider:
             interface: torbond1
-            ipv4: "45.0.1.7/24"
-            ipv6: "2001:fee1:0:1::7/64"
+            ipv4: "45.0.0.7/24"
+            ipv6: "2001:fee1::7/64"
 
 openstack:
     nodes:
       - role: controller
-        ip: "45.0.1.8"
-#      - role: controller
-#        ip: "45.0.1.9"
-#      - role: compute1
-#        ip: "45.0.1.4"
+        ip: "45.0.0.8"
       - role: compute2
-        ip: "45.0.1.5"
+        ip: "45.0.0.5"
       - role: compute3
-        ip: "45.0.1.6"
+        ip: "45.0.0.6"
       - role: compute4
-        ip: "45.0.1.7"
+        ip: "45.0.0.7"
     neutron:
         #ml2_conf
         ml2:
