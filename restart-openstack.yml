@@ -14,8 +14,8 @@
       tags:
         - glance
 
-    - name: start neutron
-      service: name={{ item }} state=started enabled=true
+    - name: restart neutron
+      service: name={{ item }} state=restarted enabled=true
       with_items:
           - neutron-server
           - neutron-linuxbridge-agent
