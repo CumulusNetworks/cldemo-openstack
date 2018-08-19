@@ -40,7 +40,7 @@
   user: cumulus
   become: yes
   become_method: sudo
-  taskss:
+  tasks:
     - name: restart neutron compute
       service: name={{ item }} state=restarted enabled=true
       with_items:
