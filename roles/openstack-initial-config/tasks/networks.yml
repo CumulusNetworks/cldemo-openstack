@@ -37,7 +37,7 @@
 - name: configure address scopes
   become: yes
   shell: >
-      bash -c "source /root/admin-openrc;
+      bash -c "
       openstack {{openstack.keystone.admin_credentials}} address scope create
       {%   for arg,value in openstack.neutron.address_scope[item].items() -%}
       {%       if value == True -%}
@@ -104,8 +104,9 @@
   become: yes
   shell: >
       bash -c "source /root/admin-openrc;
+      {%   for name,args in openstack.neutron.subnet.items() -%}
       openstack subnet create
-      {%   for arg,value in openstack.neutron.subnet[item].items() -%}
+      {%   for arg, value in args.items() -%}
       {%       if value == True -%}
          --{{arg}} \
       {%       elif value == False -%}
@@ -114,10 +115,11 @@
          --{{arg}} {{value}} \
       {%       elif value is sequence -%}
       {%           for i,v in value.items() -%}
-      {%              if loop.first %}  --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
-      {%           endfor %} \
+      {%              if loop.first -%} --{{arg}} {{i}}={{v}}{%- else -%},{{i}}={{v}}{%- endif %}
+      {%-           endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}"
+         {{ name }}
+      {%   endfor %}"
   when:  item not in _subnets.stdout
   with_items: "{{ openstack.neutron.subnet }}"
