@@ -1,6 +1,6 @@
 ---
 
-- hosts: host
+- hosts: servers
   user: cumulus
   become: yes
   become_method: sudo
