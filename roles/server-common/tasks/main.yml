@@ -20,9 +20,3 @@
   tags:
     - server
     - environment
-
-- name: configure /etc/hosts on the host
-  template: src=hosts.j2 dest=/etc/hosts
-  tags:
-    - server
-    - environment

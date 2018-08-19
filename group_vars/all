@@ -63,12 +63,16 @@ node:
 openstack:
     nodes:
       - role: controller
+        host: server01
         ip: "10.1.1.11"
       - role: compute2
+        host: server02
         ip: "10.1.1.12"
       - role: compute3
+        host: server03
         ip: "10.1.1.13"
       - role: compute4
+        host: server04
         ip: "10.1.1.14"
     neutron:
         #ml2_conf
