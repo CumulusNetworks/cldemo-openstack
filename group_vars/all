@@ -177,7 +177,7 @@ openstack:
             #    ipv6-address-mode: slaac
             #    dns-nameserver: 2001:4860:4860::8888
             #    gateway: 2001:fee1:0::/48
-            subnet1_ipv4:
+            subnet2_ipv4:
                 network: net3
                 subnet-range: 10.1.103.0/24
                 allocation-pool:
@@ -185,10 +185,10 @@ openstack:
                     end: 10.1.103.199
                 gateway: 10.1.103.1
                 disable-dhcp: true
-            subnet2_ipv4:
+            subnet4_ipv4:
                 network: net4
                 subnet-range: 10.1.104.0/24
-                floating_ip:
+                allocation-pool:
                     start: 10.1.104.101
                     end: 10.1.104.199
                 gateway: 10.1.104.1
