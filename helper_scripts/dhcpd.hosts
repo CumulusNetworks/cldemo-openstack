@@ -1,0 +1,80 @@
+group {
+
+  option domain-name-servers 192.168.200.254;
+  option domain-name "simulation";
+  #option routers 192.168.200.254;
+  option www-server 192.168.200.254;
+  option default-url = "http://192.168.200.254/onie-installer";
+
+ host spine01 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:21;
+    fixed-address 192.168.200.21;
+    option host-name "spine01";
+    option cumulus-provision-url "http://192.168.200.254/ztp_oob.sh";
+  }
+
+ host server01 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:31;
+    fixed-address 192.168.200.101;
+    option host-name "server01";
+  }
+
+ host server02 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:32;
+    fixed-address 192.168.200.102;
+    option host-name "server02";
+  }
+
+ host server03 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:33;
+    fixed-address 192.168.200.103;
+    option host-name "server03";
+  }
+
+ host server04 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:34;
+    fixed-address 192.168.200.104;
+    option host-name "server04";
+  }
+
+ host spine02 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:22;
+    fixed-address 192.168.200.22;
+    option host-name "spine02";
+  }
+
+ host leaf01 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:11;
+    fixed-address 192.168.200.11;
+    option host-name "leaf01";
+  }
+
+ host leaf02 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:12;
+    fixed-address 192.168.200.12;
+    option host-name "leaf02";
+  }
+
+ host leaf03 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:13;
+    fixed-address 192.168.200.13;
+    option host-name "leaf03";
+  }
+
+ host leaf04 {
+    # HW address for eth0
+    hardware ethernet A0:00:00:00:00:14;
+    fixed-address 192.168.200.14;
+    option host-name "leaf04";
+  }
+
+}#End of static host group

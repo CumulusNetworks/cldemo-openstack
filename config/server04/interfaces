@@ -1,0 +1,24 @@
+#configuration is for Cumulus VX
+#in real life this is a server OS
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1
+    bond-master bond0
+
+auto eth2
+iface eth2
+    bond-master bond0
+
+auto bond0
+iface bond0
+    address 172.16.1.104/24
+    bond-slaves eth1 eth2
+    bond-miimon 100
+    bond-mode 802.3ad
+    bond-lacp-rate 1
+    bond-min-links 1
+    xmit-hash-policy layer3+4
+

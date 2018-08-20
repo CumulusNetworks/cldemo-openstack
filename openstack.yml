@@ -1,40 +1,32 @@
 ---
-
-- hosts: server01,server02,server03,server04
-  user: cumulus
+- hosts: network
   become: yes
-  become_method: sudo
   roles:
-    - server-common
-    - openstack-common
+  - switch-common
+
+- hosts: leaf
+  become: yes
+  roles:
+  - l3-leaf
+
+- hosts: spine
+  become: yes
+  roles:
+  - l3-spine
+
+- hosts: host
+  roles:
+  - server-common
+  become: true
 
 - hosts: server01
-  user: cumulus
-  become: yes
-  become_method: sudo
   roles:
-    - mysql
-    - rabbitmq
-    - memcached
-    - etcd
-    - openstack-keystone
-    - openstack-glance
-    - openstack-neutron-controller
-    - openstack-nova-controller
-    - openstack-horizon
+  - openstack-controller
+  become: true
 
-- hosts: server02,server03,server04
-  user: cumulus
-  become: yes
-  become_method: sudo
+- hosts: server02
   roles:
-    - openstack-neutron-compute
-    - openstack-nova-compute
+  - openstack-compute
+  become: true
 
-
-- hosts: server01
-  user: cumulus
-  become: yes
-  become_method: sudo
-  roles:
-    - openstack-initial-config
+...

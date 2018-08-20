@@ -1,0 +1,7 @@
+10.1.0.1    ib-spine01
+10.1.0.2    ib-spine02
+10.1.1.1    ib-leaf01
+10.1.1.2    ib-leaf02
+10.1.1.11   ib-server01, ib-controller
+10.1.1.12   ib-server02, ib-compute01
+

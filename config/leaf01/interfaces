@@ -1,0 +1,85 @@
+auto lo
+iface lo inet loopback
+    alias loopback
+    address 10.0.0.11/32
+    clagd-vxlan-anycast-ip 10.10.10.20
+
+auto eth0
+iface eth0 inet dhcp
+
+#peerlink
+auto swp49
+iface swp49
+  post-up ip link set $IFACE promisc on
+  
+auto swp50
+iface swp50
+  post-up ip link set $IFACE promisc on
+  
+# uplinks
+auto swp51
+iface swp51
+
+auto swp52
+iface swp52
+
+#host connections
+auto swp1
+iface swp1
+  post-up ip link set $IFACE promisc on
+  
+auto swp2
+iface swp2
+  post-up ip link set $IFACE promisc on
+  
+auto server01
+iface server01
+  alias server01 MLAG bond
+  bond-slaves swp1
+  clag-id 1
+
+auto server02
+iface server02
+  alias server02 MLAG bond
+  bond-slaves swp2
+  clag-id 2
+
+auto peerlink
+iface peerlink
+  alias MLAG peerlink bond
+  bond-slaves swp49 swp50
+
+auto peerlink.4094
+iface peerlink.4094
+  address 169.254.1.1/30
+  clagd-peer-ip 169.254.1.2
+  clagd-backup-ip 192.168.200.12
+  clagd-sys-mac 44:38:39:FF:40:94
+
+auto bridge
+iface bridge
+    bridge-ports server01 server02 peerlink vxlan10001 vxlan101001 vxlan101002
+    bridge-vlan-aware yes
+    bridge-vids 1 1001-1099
+    bridge-pvid 1
+
+auto vxlan10001
+iface vxlan10001
+    vxlan-id 10001
+    vxlan-local-tunnelip 10.0.0.11
+    bridge-access 1
+    bridge-learning off
+
+auto vxlan101001
+iface vxlan101001
+     vxlan-id 101001
+     vxlan-local-tunnelip 10.0.0.11
+     bridge-access 1001
+     bridge-learning off
+
+auto vxlan101002
+iface vxlan102001
+     vxlan-id 101002
+     vxlan-local-tunnelip 10.0.0.11
+     bridge-access 1002
+     bridge-learning off

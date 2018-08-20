@@ -1,68 +1,88 @@
-Openstack Demo
-==============
-This demo is an ansible playbook that installs Openstack Pike on the reference topology.
+![Cumulus icon](images/cumulus-logo.png)
 
-This demo is written for the [cldemo-vagrant](https://github.com/cumulusnetworks/cldemo-vagrant) reference topology and utilizes
-[Routing on the Host](https://github.com/cumulusnetworks/cldemo-roh-ansible) to advertise the local VXLAN termination points.
+# Cumulus Networks EVPN Demos for [Cumulus VX](https://cumulusnetworks.com/products/cumulus-vx/)
 
+Need help?  Post on the [Community](https://getsatisfaction.cumulusnetworks.com/cumulus) or join [Cumulus Slack](https://slack.cumulusnetworks.com/)
 
-Quickstart: Run the demo
 ------------------------
-Before running this demo, install [VirtualBox](https://www.virtualbox.org/wiki/Download_Old_Builds) and [Vagrant](https://releases.hashicorp.com/vagrant/). The currently supported versions of VirtualBox and Vagrant can be found on the [cldemo-vagrant](https://github.com/cumulusnetworks/cldemo-vagrant).
 
-    git clone https://github.com/cumulusnetworks/cldemo-vagrant
-    cd cldemo-vagrant
+This Github repository contains the configuration files necessary for setting up Openstack Pike with EVPN (Ethernet VPN) using Cumulus Linux and FRR on the [Reference Topology](http://github.com/cumulusnetworks/cldemo-vagrant).
 
-Before you get started, you will need to increase the memory allocated to server01.
-Find the file named `Vagrantfile` and find the stanza for `server01`. Replace
-`v.memory = 512` with `v.memory = 3072`.
+The [configuration files](config/) in this repository will set up a BGP unnumbered routing fabric between the leafs and spines, and will use MLAG trunks between switches and the servers in that rack.
 
-    vagrant up oob-mgmt-server oob-mgmt-switch leaf01 leaf02 spine01 spine02 server01 server02 leaf03 leaf04 server03 server04
-    vagrant ssh oob-mgmt-server
+
+![Topology](images/evpn.png)
+
+Quickstart: Dual-Attach (MLAG) Demo
+------------------------
     git clone https://github.com/cumulusnetworks/cldemo-openstack
     cd cldemo-openstack
-    ansible-playbook run-demo.yml
+    git checkout cldemo-evpn
+    vagrant up leaf01 leaf02 leaf03 leaf04 spine01 spine02 server01 server02 server03 server04
+    vagrant ssh server01
+    sudo su - cumulus
+    ping 172.16.1.102
+    ping 172.16.1.103
+    ping 172.16.1.104
+
+The ansible will change the subnet when it installs openstack.
+
+[Troubleshooting Commands](https://docs.cumulusnetworks.com/display/DOCS/Ethernet+Virtual+Private+Network+-+EVPN#EthernetVirtualPrivateNetwork-EVPN-CumulusLinuxOutputCommands)    
 
 
-Launch a single VM instance on the shared provider network.
-
-    ssh server01
-    . demo-openrc
-    openstack server create --flavor m1.nano --image cirros --nic net-id=provider --security-group default cirros01
-    ping 192.168.0.101 #wait until it starts responding
-    ssh cirros@192.168.0.101
-    # password is "cubswin:)"
-    hostname
-    ping google.com
-    exit
-
-Create a private tenant network and launch a VM in it. Give it a floating IP address.
-
-    openstack network create demonet
-    openstack subnet create --name demonet --dns-nameserver 8.8.8.8 --gateway 200.0.0.1 demonet 200.0.0.0/24
-    openstack router create demorouter
-    openstack router interface-add demorouter demonet
-    openstack router gateway-set demorouter provider
-    openstack server create --flavor m1.nano --image cirros --nic net-id=demonet --security-group default cirros02
-    openstack ip floating create provider
-    # 192.168.0.103 is assumed to be the floating IP from the last command
-    openstack ip floating add 192.168.0.103 cirros02
-    ping 192.168.0.103
-    ssh cirros@192.168.0.103
-    hostname
-    ping google.com
-    exit
+![Topology](images/mlag.png)
 
 
-To access the horizon terminal, open two new terminals and run one of the
-following commands in each. When prompted for a password, enter `CumulusLinux!`.
+## Install Openstack
+--------------------
+Copy and paste the setup script in the repo into a fresh Ubuntu 16.04 host to prepare it for running the cldemo-* topologies with vagrant + libvirt 
 
-    ssh -L 8080:server01:80 cumulus@127.0.0.1 -p 2222
-    ssh -L 6080:localhost:8888 cumulus@127.0.0.1 -p 2222 ssh -L 8888:controller:6080 server01
+To deploy the Openstack hosts, simply execute: 
+    ansible-playbook openstack.yml
 
-Leave these terminals open - they will create tunnels that will allow you to
-access the Horizon dashboard and the noVNC console clients using your web
-browser. Navigate to  http://localhost:8080/horizon in your web browser.
-Log in with the demo user (password is `demo`) and the default domain. You
-should be able to see the last two steps. Open one of them and go to the "console"
-tab. You should be able to access the serial console from this web page.
+
+### Detailed Instructions and Documentation
+---------------------------------------
+[EVPN Documentation](https://docs.cumulusnetworks.com/display/DOCS/Ethernet+Virtual+Private+Network+-+EVPN)
+The EVPN Documentation was built around this demo and makes walking through this demo a breeze.  Please report problems with this demo using the "issues" tab above.
+
+## Troubleshooting Commands
+
+ * `bridge fdb show` shows the mac-address table for local and remote VTEPs
+ * `show ip bgp summary` shows BGP IPv4 neighbor adjacencies
+ * `show bgp evpn summary` shows BGP EVPN neighbor adjacencies
+ * `show bgp evpn vni` shows VNIs that this device is participating in (only works on a VTEP)
+ * `show evpn vni` shows remote VTEPs that share VNIs that this switch is participating in (only works on a VTEP)
+ * `show evpn mac vni all` show MAC address information learned per VNI
+ * `show bgp evpn route` show all EVPN routes
+
+
+### Requirements
+----------------------
+[Vagrant](https://www.vagrantup.com/) (recommended 2.1.2)
+
+and
+
+[KVM](http://www.linux-kvm.org/page/Downloads)
+
+Factory-reset a device
+----------------------
+    vagrant destroy -f leaf01
+    vagrant up leaf01
+
+Destroy the entire topology
+---------------------------
+    vagrant destroy -f
+
+KVM Support
+---------------------------
+By default this Vagrantfile is setup for KVM.
+
+All other directions remain the same
+
+
+### Cumulus Linux
+---------------------------------------
+Cumulus Linux is a software distribution that runs on top of industry standard networking hardware. It enables the latest Linux applications and automation tools on networking gear while delivering new levels of innovation and ﬂexibility to the data center.
+
+For further details please see: [cumulusnetworks.com](http://www.cumulusnetworks.com)

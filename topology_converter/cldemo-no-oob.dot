@@ -1,0 +1,34 @@
+graph vx {
+ "leaf01" [function="leaf" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "leaf02" [function="leaf" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "leaf03" [function="leaf" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "leaf04" [function="leaf" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "spine01" [function="spine" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "spine02" [function="spine" os="CumulusCommunity/cumulus-vx" version="3.6.2" memory="768" config="./helper_scripts/config_switch.sh" vagrant="eth0"]
+ "server01" [function="host" os="yk0/ubuntu-xenial" memory="1024" config="./helper_scripts/config_server.sh" vagrant="eth0"]
+ "server02" [function="host" os="yk0/ubuntu-xenial" memory="4096" config="./helper_scripts/config_server.sh" vagrant="eth0"]
+ "server03" [function="host" os="yk0/ubuntu-xenial" memory="4096" config="./helper_scripts/config_server.sh" vagrant="eth0"]
+ "server04" [function="host" os="yk0/ubuntu-xenial" memory="4096" config="./helper_scripts/config_server.sh" vagrant="eth0"]
+ "leaf01":"swp51" -- "spine01":"swp1"
+ "leaf02":"swp51" -- "spine01":"swp2"
+ "leaf01":"swp52" -- "spine02":"swp1"
+ "leaf02":"swp52" -- "spine02":"swp2"
+ "leaf01":"swp49" -- "leaf02":"swp49"
+ "leaf01":"swp50" -- "leaf02":"swp50"
+ "leaf03":"swp51" -- "spine01":"swp3"
+ "leaf04":"swp51" -- "spine01":"swp4"
+ "leaf03":"swp52" -- "spine02":"swp3"
+ "leaf04":"swp52" -- "spine02":"swp4"
+ "leaf03":"swp49" -- "leaf04":"swp49"
+ "leaf03":"swp50" -- "leaf04":"swp50"
+ "spine01":"swp31" -- "spine02":"swp31"
+ "spine01":"swp32" -- "spine02":"swp32"
+ "server01":"eth1" -- "leaf01":"swp1" [left_mac="00:03:00:11:11:01"]
+ "server01":"eth2" -- "leaf02":"swp1" [left_mac="00:03:00:11:11:02"]
+ "server02":"eth1" -- "leaf01":"swp2" [left_mac="00:03:00:22:22:01"]
+ "server02":"eth2" -- "leaf02":"swp2" [left_mac="00:03:00:22:22:02"]
+ "server03":"eth1" -- "leaf03":"swp1" [left_mac="00:03:00:33:33:01"]
+ "server03":"eth2" -- "leaf04":"swp1" [left_mac="00:03:00:33:33:02"]
+ "server04":"eth1" -- "leaf03":"swp2" [left_mac="00:03:00:44:44:01"]
+ "server04":"eth2" -- "leaf04":"swp2" [left_mac="00:03:00:44:44:02"]
+}
