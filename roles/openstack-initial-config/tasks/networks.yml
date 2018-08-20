@@ -104,7 +104,7 @@
   become: yes
   shell: >
       bash -c "source /root/admin-openrc;
-      openstack subnet create
+      openstack subnet create \
       {%   for arg,value in openstack.neutron.subnet[item].iteritems() -%}
       {%       if value == True -%}
          --{{arg}} \
@@ -114,8 +114,8 @@
          --{{arg}} {{value}} \
       {%       elif value is sequence -%}
       {%           for i,v in value.items() -%}
-      {%              if loop.first %} --{{arg}} {{i}}={{v}}{%- else -%},{{i}}={{v}}{%- endif %}
-      {%          endfor %} \
+      {%              if loop.first %} --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
+      {%-          endfor %}   \
       {%       endif %}
       {%   endfor %}
          {{ item }}"
