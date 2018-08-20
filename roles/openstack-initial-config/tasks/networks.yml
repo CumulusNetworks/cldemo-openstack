@@ -107,11 +107,11 @@
       openstack subnet create
       {%-   for arg,value in openstack.neutron.subnet[item].iteritems() %}
       {%-       if value == True %}
-         --{{arg}}
+       \  --{{arg}}
       {%-       elif value == False %}
       {%-       elif value == None %}
       {%-       elif value is string or value is number %}
-         --{{arg}} {{value}}
+       \  --{{arg}} {{value}}
       {%-       elif value is sequence %}
       {%-           for i,v in value.items() %}
       {%-              if loop.first %} --{{arg}} {{i}}={{v}}{%- else %},{{i}}={{v}}{% endif %}
