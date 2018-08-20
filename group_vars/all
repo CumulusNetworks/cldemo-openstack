@@ -1,87 +1,204 @@
-ansible_ssh_pass: "CumulusLinux!"
-ansible_become_pass: "CumulusLinux!"
+global:
+    save_local: true
 
-#
-# Openstack external access configuration
-#
+# networking
 
-HORIZON_HOST:  server01
-HORIZON_UI:    80
-FLOATING_IP:   192.168.0.102
-FLOATING_SSH:  2222
+node:
+    server01:
+        loopback:
+            ipv4: "10.0.0.31"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.11/24"
+                LACP_rate: fast
+                LACP_mode: 802.3ad
+                miimon: 100
+                minlinks: 1
+                members:
+                    - "eth1"
+                    - "eth2"
+        provider:
+            interface: bond0
+            ipv4: "10.1.1.11/24"
 
-#
-# Global connectivity options
-#
+    server02:
+        loopback:
+            ipv4: "10.0.0.32"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.12/24"
+                LACP_rate: fast
+                LACP_mode: 802.3ad
+                miimon: 100
+                minlinks: 1
+                members:
+                    - "eth1"
+                    - "eth2"
+        provider:
+            interface: bond0
+            ipv4: "10.1.1.12/24"
 
-ACCESS_IFS:     'swp1,swp2'
-UPLINK_IFS:     'swp51,swp52'
-AGG_IFS:        'swp1,swp2'
+    server03:
+        loopback:
+            ipv4: "10.0.0.33"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.13/24"
+                LACP_rate: fast
+                LACP_mode: 802.3ad
+                miimon: 100
+                minlinks: 1
+                members:
+                    - "eth1"
+                    - "eth2"
+        provider:
+            interface: bond0
+            ipv4: "10.1.1.13/24"
 
-HOST_IF:        'eth1,eth2'
-OUTSIDE_NET:    '10.0.2.0/24'
+    server04:
+        loopback:
+            ipv4: "10.0.0.34"
+        bonds:
+            bond0:
+                ipv4: "10.1.1.14/24"
+                LACP_rate: fast
+                LACP_mode: 802.3ad
+                miimon: 100
+                minlinks: 1
+                members:
+                    - "eth1"
+                    - "eth2"
+        provider:
+            interface: bond0
+            ipv4: "10.1.1.14/24"
 
-#
-# Inventory specific networking variables
-#
-
-switchvars:
-
-  spine01:
-    ASN: 65000
-    V4: 10.0.0.1
-    V6: fd00:10:0:0::1
-
-  spine02:
-    ASN: 65000
-    V4: 10.0.0.2
-    V6: fd00:10:0:0::2
-
-  leaf01:
-    ASN: 65101
-    V4: 10.1.0.1
-    V6: fd00:10:1:0::1
-
-  leaf02:
-    ASN: 65102
-    V4: 10.1.0.2
-    V6: fd00:10:1:0::2
-
-servervars:
-
-  server01:
-    ASN: 65201
-    V4: 10.2.0.11
-    V6: fd00:10:2:0::11
-
-  server02:
-    ASN: 65202
-    V4: 10.2.0.12
-    V6: fd00:10:2:0::2
-
-#
-# OpenStack variables
-#
 openstack:
-  provider_network:
-    iface:
-      server01: "eth0"
-      server02: "eth0"
-    cidr: "192.168.0.0/24"
-    start: "192.168.0.100"
-    end: "192.168.0.150"
-    gateway: "192.168.0.254"
-  admin_token: "ac014aaa2beb079192be"
-  admin_password: "CumulusLinux"
-  demo_password: "demo"
-  vagrant_novnc_hack: true
-  args: "--os-token ac014aaa2beb079192be --os-url http://controller:35357/v3 --os-identity-api-version 3"
-  admin_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
-  demo_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
+    nodes:
+      - role: controller
+        host: server01
+        ip: "10.1.1.11"
+      - role: compute2
+        host: server02
+        ip: "10.1.1.12"
+      - role: compute3
+        host: server03
+        ip: "10.1.1.13"
+      - role: compute4
+        host: server04
+        ip: "10.1.1.14"
+    neutron:
+        #ml2_conf
+        ml2:
+            type_drivers:
+              - flat
+              - vlan
+              - vxlan
+            tenant_network_types:
+              - vlan
+              - vxlan
+            mechanism_drivers:
+              - linuxbridge
+              - l2population
+            #network type parameters
+            flat_networks:
+              - provider
+            #gre_tunnel_id_range:
+            vlan_id_range: provider:1001:1099
+            vxlan_vni_ranges: 10001:10999
 
-cumulus:
-  ml2:
-    switches: "leaf01,leaf02"
-    new_bridge: True
-    spf_enable: True
+        #linuxbridge_agent
+        linux_bridge:
+            # linux_bridge
+            physical_interface_mappings:
+                provider: bond0
+            # vxlan
+            enable_vxlan: true
+            l2_population: true
 
+        # Address scopes are similar to VRFs in that they provide isolation of subnets.
+        address_scope:
+            address_scope_ip4:
+                ip-version: 4
+                share: true
+            address_scope_ip6:
+                ip-version: 6
+                share: true
+        # Subnet pools provide the CIDR blocks from which subnets can be allocated. Specifying
+        # a default-subnet-pool simplifies subnet creation for a given address family.
+        # Without a subnet pool, the subnet must specify a subnet-range.
+        subnet_pool:
+            subnet_pool_ip4:
+                address-scope: address_scope_ip4
+                pool-prefix: 10.1.0.0/16
+                default-prefix-length: 24
+                share: true
+                default: true
+            subnet_pool_ip6:
+                address-scope: address_scope_ip6
+                pool-prefix: 2001:dead:beef::/48
+                default-prefix-length: 64
+                share: true
+                default: true
+        # This is the networking segment, which can contain several subnets.
+        # Think of this as the layer2 construct.
+        network:
+            # Public/Provider networks, typically the internet access for openstack cluster
+            public:
+                provider-physical-network: provider
+                provider-network-type: flat
+                external: false
+                default: true
+                share: true
+            # Private/Project networks
+            net3:
+                project: admin
+                provider-physical-network: provider
+                provider-network-type: vlan
+                provider-segment: 1003
+            net4:
+                project: admin
+                provider-physical-network: provider
+                provider-network-type: vlan
+                provider-segment: 1004
+        subnet:
+            public_ipv4:
+                network: public
+                ip-version: 4
+                subnet-pool: subnet_pool_ip4
+                prefix-length: 24
+                dns-nameserver: 8.8.8.8
+                gateway: 10.1.1.1
+            #public_ipv6:
+            #    network: public
+            #    ip-version: 6
+            #    subnet-pool: subnet_pool_ipv6
+            #    prefix-length: 64
+            #    ipv6-ra-mode: slaac
+            #    ipv6-address-mode: slaac
+            #    dns-nameserver: 2001:4860:4860::8888
+            #    gateway: 2001:fee1:0::/48
+            subnet3_ipv4:
+                network: net3
+                subnet-range: 10.1.103.0/24
+                allocation-pool:
+                    start: 10.1.103.101
+                    end: 10.1.103.199
+                gateway: 10.1.103.1
+            subnet4_ipv4:
+                network: net4
+                subnet-range: 10.1.104.0/24
+                allocation-pool:
+                    start: 10.1.104.101
+                    end: 10.1.104.199
+                gateway: 10.1.104.1
+
+    keystone:
+        admin_token: "ac014aaa2beb079192be"
+        admin_password: "CumulusLinux"
+        demo_password: "demo"
+        vagrant_novnc_hack: true
+        args: "--os-token ac014aaa2beb079192be --os-url http://controller:35357/v3 --os-identity-api-version 3"
+        admin_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
+        neutron_credentials: "--os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password CumulusLinux --os-auth-url http://controller:35357/v3"
+        demo_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3 --os-identity-api-version 3 --os-image-api-version 2"
+        demo_neutron_credentials:  "--os-project-domain-name default --os-user-domain-name default --os-project-name demo --os-username demo --os-password demo --os-auth-url http://controller:35357/v3"
