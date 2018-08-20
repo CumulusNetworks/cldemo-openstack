@@ -114,7 +114,7 @@
          --{{arg}} {{value}} \
       {%       elif value is sequence -%}
       {%           for i,v in value.items() -%}
-      {%              if loop.first %} --{{arg}} {{i}}={{v}}{%- else -%},{{i}}={{v}}{% endif %}
+      {%              if loop.first %} --{{arg}} {{i}}={{v}}{%- else -%},{{i}}={{v}}{%- endif %}
       {%          endfor %} \
       {%       endif %}
       {%   endfor %}
