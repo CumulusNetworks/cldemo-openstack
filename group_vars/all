@@ -164,7 +164,7 @@ openstack:
             public_ipv4:
                 network: public
                 ip-version: 4
-                subnet-pool: subnet_pool_ipv4
+                subnet-pool: subnet_pool_ip4
                 prefix-length: 24
                 dns-nameserver: 8.8.8.8
                 gateway: 10.1.1.1
