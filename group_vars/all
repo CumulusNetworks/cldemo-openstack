@@ -184,7 +184,6 @@ openstack:
                     start: 10.1.103.101
                     end: 10.1.103.199
                 gateway: 10.1.103.1
-                disable-dhcp: true
             subnet4_ipv4:
                 network: net4
                 subnet-range: 10.1.104.0/24

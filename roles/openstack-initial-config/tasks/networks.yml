@@ -104,7 +104,7 @@
   become: yes
   shell: >
       bash -c "source /root/admin-openrc;
-      {%   for name,args in openstack.neutron.subnet.items() -%}
+      {%   for name,args in openstack.neutron.subnet[item].items() -%}
       openstack subnet create
       {%   for arg, value in args.items() -%}
       {%       if value == True -%}
