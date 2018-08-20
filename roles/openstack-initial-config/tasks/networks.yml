@@ -105,7 +105,7 @@
   shell: >
       bash -c "source /root/admin-openrc;
       openstack subnet create
-      {%   for arg,value in openstack.neutron.subnet[item].iteritems() -%}
+      {%-  for arg,value in openstack.neutron.subnet[item].iteritems() -%}
       {%       if value == True -%}
          --{{arg}} \
       {%       elif value == False -%}
@@ -118,6 +118,6 @@
       {%-          endfor %} \
       {%       endif %}
       {%   endfor %}
-         {{ item }}
+         {{ item }}"
   when:  item not in _subnets.stdout
   with_items: "{{ openstack.neutron.subnet }}"
