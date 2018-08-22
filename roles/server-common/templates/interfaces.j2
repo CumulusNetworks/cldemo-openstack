@@ -1,21 +1,74 @@
-{% set intvars = interfaces[ansible_hostname] %}
-{% set neighborvars = intvars['neighbors'] %}
-# /etc/network/interfaces template for servers ({{ansible_hostname}})
-# Created by Ansible
+# {{ ansible_managed }}
+
+{### Initialize variables ###}
+{% set node = node[ansible_hostname] -%}
+{% set bonds = node.bonds | d() -%}
+
 
 auto lo
 iface lo inet loopback
 
+{### Handle the Loopback and all L3 interfaces ###}
+
+{% if node.loopback is defined %}
 auto lo:0
-iface lo:0 inet static
-    address {{ intvars.loopback }}/32
+iface lo:0
+{%  if node.loopback.ipv4 is defined %}
+    address {{ node.loopback.ipv4 }}/32
+{%  endif %}
+{% endif %}
 
-{% for neighbor in intvars.neighbors %}
-auto {{ neighbor }}
-iface {{ neighbor }} inet static
-    address {{ intvars.loopback }}/32
-{% endfor %}
-
-
+# needed for vagrant
 auto eth0
 iface eth0 inet dhcp
+
+{### Build the bonds and member interfaces ###}
+{% if bonds is defined %}
+{%   for bond in bonds -%}
+{%     if bonds[bond].members is defined %}
+{### Loop through and create the member interfaces ###}
+{%       for mem_int in bonds[bond].members -%}
+
+auto {{mem_int}}
+iface {{mem_int}}
+{%         if ansible_distribution == "Ubuntu" %}
+    bond-master {{ bond }}
+{%         endif %}
+{%         if bonds[bond].mtu is defined %}
+    mtu {{ bonds[bond].mtu }}
+{%         endif %}
+{%       endfor %}
+
+{### Create the actual bond interface ###}
+auto {{bond}}
+{%       if bonds[bond].dhcp is defined and bonds[bond].dhcp == "enable" %}
+iface {{bond}} inet dhcp
+{%       else -%}
+iface {{bond}}
+{%       endif -%}
+    bond-slaves {{bonds[bond].members | join(" ")}}
+{%       if bonds[bond].mtu is defined %}
+    mtu {{ bonds[bond].mtu }}
+{%       endif %}
+{%       if bonds[bond].LACP_rate is defined %}
+{%         if bonds[bond].LACP_rate == "fast" %}
+    bond-lacp-rate 1
+{%         else %}
+    bond-lacp-rate 0
+{%         endif -%}
+{%       endif %}
+{%       if bonds[bond].LACP_mode is defined %}
+    bond-mode {{ bonds[bond].LACP_mode }}
+{%       endif %}
+{%       if bonds[bond].miimon is defined %}
+    bond-miimon {{ bonds[bond].miimon }}
+{%       endif %}
+{%       if bonds[bond].minlinks is defined %}
+    bond-min-links {{ bonds[bond].minlinks }}
+{%       endif %}
+{%       if bonds[bond].ipv4 is defined %}
+    address {{ bonds[bond].ipv4 }}
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+{% endif %}

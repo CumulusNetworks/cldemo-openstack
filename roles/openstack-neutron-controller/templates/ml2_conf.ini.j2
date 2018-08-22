@@ -181,7 +181,7 @@ extension_drivers = port_security
 # an empty list to disable flat networks. (list value)
 #flat_networks =
 {% if openstack.neutron.ml2.flat_networks is defined %}
-flat_networks = {{ openstack.neutron.ml2.flat_networks }}
+flat_networks = {{ openstack.neutron.ml2.flat_networks | join(',') | d("*") }}
 {% endif %}
 
 

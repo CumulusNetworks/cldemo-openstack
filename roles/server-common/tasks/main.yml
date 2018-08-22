@@ -1,4 +1,5 @@
 ---
+
 # This task configures /etc/network/interfaces on ifupdown2. The variables for
 # which interfaces are neighbors and networks come from the group_vars/all file.
 - name: install ifupdown2
@@ -6,7 +7,7 @@
   tags:
     - server
     - environment
-    
+
 # Legacy ifupdown requires its own template, so we broke it out into a seperate
 # role. In theory, ifupdown2 is capable of running on hosts, but it takes some
 # work to install without having it conflict with other packages. For this demo,
@@ -14,15 +15,28 @@
 
 # This configures the interfaces and sets the default internal route to point
 # to the leafs. If the configuration changes, ifupdown will be reloaded.
-- name: configure /etc/network/interfaces on the host (using legacy ifupdown)
+- name: configure /etc/network/interfaces on the host
   template: src=interfaces.j2 dest=/etc/network/interfaces
   notify: reload networking legacy
   tags:
     - server
     - environment
+    - interface_setup
 
-- name: configure /etc/hosts on the host
-  template: src=hosts.j2 dest=/etc/hosts
+- name: create config folder locally
+  file: path=config/{{ ansible_hostname }} state=directory recurse=yes
+  become: no
+  delegate_to: localhost
   tags:
-    - server
-    - environment
+    - interface_setup
+    - local
+  when: global.save_local
+
+- name: create rendered flat-file /etc/network/interfaces locally
+  template: src=interfaces.j2 dest=config/{{ ansible_hostname }}/interfaces
+  become: no
+  delegate_to: localhost
+  tags:
+    - interface_setup
+    - local
+  when: global.save_local

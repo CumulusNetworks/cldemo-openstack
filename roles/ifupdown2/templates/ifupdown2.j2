@@ -173,18 +173,21 @@ iface {{vrf}}
 {%       for mem_int in bonds[bond].members -%}
 auto {{mem_int}}
 iface {{mem_int}}
+{%         if ansible_distribution == "Ubuntu" %}
+    bond-master {{ bond }}
+{%         endif %}
 {%         if bonds[bond].mtu is defined %}
     mtu {{ bonds[bond].mtu }}
 {%         endif %}
 {%       endfor %}
 {### Create the actual bond interface ###}
 auto {{bond}}
-{%       if bonds[bond].dhcp is defined and bonds[bond].dhcp == "enable" %}
-iface {{bond}} inet dhcp
+iface {{bond}} inet manual
+{%       if ansible_distribution == "Ubuntu" %}
+    bond-slaves none
 {%       else -%}
-iface {{bond}}
-{%       endif -%}
     bond-slaves {{bonds[bond].members | join(" ")}}
+{%       endif -%}
 {%       if bonds[bond].mtu is defined %}
     mtu {{ bonds[bond].mtu }}
 {%       endif %}
