@@ -12,6 +12,9 @@ Before running this demo, install [VirtualBox](https://www.virtualbox.org/wiki/D
 
     git clone https://github.com/cumulusnetworks/cldemo-vagrant
     cd cldemo-vagrant
+    git checkout cl3.3.2
+
+*Note: This demo was initially constructed to use Quagga as the routing suite. Since the move to replace Quagga with FRR in 3.4.0+ the playbooks in this demo have become outdated on the newest versions of Cumulus Linux. As a result we have pinned this demo to use the 3.3.2 version of Cumulus Linux as indicated above.*
 
 Before you get started, you will need to increase the memory allocated to server01.
 Find the file named `Vagrantfile` and find the stanza for `server01`. Replace
